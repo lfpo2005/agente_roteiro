@@ -2,8 +2,6 @@ package br.com.devluisoliveira.agenteroteiro.core.application.mapper;
 
 import br.com.devluisoliveira.agenteroteiro.core.domain.entity.User;
 import br.com.devluisoliveira.agenteroteiro.core.port.in.dto.UserRequestDto;
-import br.com.devluisoliveira.agenteroteiro.core.port.out.response.dto.AddressResponseDTO;
-import br.com.devluisoliveira.agenteroteiro.core.port.out.response.dto.PhoneResponseDTO;
 import br.com.devluisoliveira.agenteroteiro.core.port.out.response.dto.RoleResponseDTO;
 import br.com.devluisoliveira.agenteroteiro.core.port.out.response.dto.UserResponseDto;
 import lombok.extern.slf4j.Slf4j;
@@ -14,7 +12,6 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Slf4j
