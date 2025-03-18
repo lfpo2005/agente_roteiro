@@ -11,6 +11,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.Map;
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -20,24 +22,23 @@ public class GenericGenerationService implements GenericGenerationPortIn {
     private final ContentGenerationPortOut contentGenerationPortOut;
     private final GenericGeneraMapper genericGeneraMapper;
 
-
     @Override
     public ContentGenerationResponse generateContent(User user, ContentGenerationRequest request) {
-        log.info("[AgentGenerationService.initializeAgentGeneric] - Iniciando a geração de conteúdo para o usuário {}, titulo {}",
+        log.info("Iniciando geração de conteúdo para usuário {}, título {}",
                 user.getUserId(), request.getTitle());
 
         // Validar a solicitação
         validateRequest(request);
 
-        log.info("[AgentGenerationService.initializeAgentGeneric] - Solicitação validada com sucesso");
-        // Iniciar o processo de geração de conteúdo
-        ContentGenerationResponse process = (ContentGenerationResponse) agentGenerationService.startGeneration(request);
+        // Delegar a geração de conteúdo para o serviço especializado
+        var response = agentGenerationService.startGeneration((Map<String, Object>) request);
 
-        ContentGeneration contentGeneration = genericGeneraMapper.toEntity(process);
+        // Persistir o resultado
+        ContentGeneration contentGeneration = genericGeneraMapper.toEntity(response);
+        contentGeneration.setUser(user); // Associar ao usuário
         ContentGeneration savedContentGeneration = contentGenerationPortOut.saveContentGeneration(contentGeneration);
 
-        log.info("[AgentGenerationService.initializeAgentGeneric] - Processo de geração Salvo com sucesso");
-
+        log.info("Processo de geração concluído e salvo com sucesso");
 
         return genericGeneraMapper.toDto(savedContentGeneration);
     }

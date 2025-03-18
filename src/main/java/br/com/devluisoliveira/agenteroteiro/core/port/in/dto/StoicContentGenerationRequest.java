@@ -14,6 +14,7 @@ public class StoicContentGenerationRequest extends ContentGenerationRequest {
     // Filósofo estoico selecionado
     private PhilosopherType philosopher;
     private String philosopherName;
+    private String philosopherStyle;
 
     // Parâmetros específicos de estoicismo
     private String stoicConcept; // Ex: Dicotomia de controle, Virtude, Cosmopolitismo

@@ -39,6 +39,7 @@ public class PromptTemplateService {
 
             // Personalizar o template com os dados da requisição
             return personalizeTemplate(baseTemplate, request);
+
         } catch (Exception e) {
             log.error("Erro ao carregar template de prompt para o agente {}: {}",
                     request.getAgentType(), e.getMessage());
@@ -51,6 +52,19 @@ public class PromptTemplateService {
                         (request.getTitle() != null ? request.getTitle() : "tema não especificado");
             }
         }
+    }
+
+
+    public String loadStoicPromptTemplate(StoicContentGenerationRequest request, PhilosopherStyleService styleService) {
+        // Carregar template base
+        String baseTemplate = loadTemplateFile(AgentType.STOICISM);
+
+        // Personalizar com estilo do filósofo específico
+        String philosopherStyle = styleService.getPhilosopherStyle(request.getPhilosopherName());
+        baseTemplate = baseTemplate.replace("{philosopherStyle}", philosopherStyle);
+
+        // Continuar com outras personalizações
+        return personalizeTemplate(baseTemplate, convertToStandardRequest(request));
     }
 
     /**
