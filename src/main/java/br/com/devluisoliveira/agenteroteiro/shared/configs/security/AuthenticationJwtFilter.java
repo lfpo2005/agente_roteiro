@@ -1,0 +1,62 @@
+package br.com.devluisoliveira.agenteroteiro.shared.configs.security;
+
+
+import io.jsonwebtoken.ExpiredJwtException;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
+import org.springframework.util.StringUtils;
+import org.springframework.web.filter.OncePerRequestFilter;
+
+import java.io.IOException;
+import java.util.UUID;
+
+
+@Slf4j
+public class AuthenticationJwtFilter extends OncePerRequestFilter {
+
+    @Autowired
+    JwtProvider jwtProvider;
+
+    @Autowired
+    UserDetailsServiceImpl userDetailsService;
+
+    @Override
+    protected void doFilterInternal(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, FilterChain filterChain) throws ServletException, IOException {
+        try {
+            String jwtStr = getTokenHeader(httpServletRequest);
+            if (jwtStr != null && jwtProvider.validateJwt(jwtStr)) {
+                String userId = jwtProvider.getSubjectJwt(jwtStr);
+                UserDetails userDetails = userDetailsService.loadUserById(UUID.fromString(userId));
+                UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+                        userDetails, null, userDetails.getAuthorities());
+                authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(httpServletRequest));
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+            }
+        } catch (ExpiredJwtException e) {
+            httpServletResponse.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Token expirado");
+            return;
+        } catch (Exception e) {
+            httpServletResponse.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Falha na autenticação");
+            return;
+        }
+        filterChain.doFilter(httpServletRequest, httpServletResponse);
+    }
+
+
+    private String getTokenHeader(HttpServletRequest request) {
+        String headerAuth = request.getHeader("Authorization");
+        if (StringUtils.hasText(headerAuth) && headerAuth.startsWith("Bearer ")) {
+            return headerAuth.substring(7, headerAuth.length());
+        }
+        return null;
+    }
+
+}

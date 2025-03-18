@@ -1,0 +1,101 @@
+server:
+  port: 8080
+  servlet:
+    context-path: /agente-roteiro
+
+spring:
+  application:
+    name: roteiro
+  datasource:
+    url: jdbc:postgresql://localhost:5432/erp-dev
+    username: postgres
+    password: sHDv7kCSisihnOfS3l7k
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+      dialect: org.hibernate.dialect.PostgreSQL10Dialect
+      jdbc:
+        lob.non-contextual-creation: true
+    properties:
+      hibernate:
+        show_sql: true
+        format_sql: true
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+  output:
+    ansi:
+      enabled: Always
+  cache:
+    type: redis
+    redis:
+      host: localhost
+      port: 6379
+  minio:
+    url: http://localhost:9000
+    access-key: lfpo2005
+    secret-key: 197197197
+    bucket-name: img-store-jaleco-local
+
+
+# Configuração do OpenAI
+openai:
+  api:
+    key: ${OPENAI_API_KEY:chave_não_definida}
+  #model: gpt-4
+  model: gpt-3.5-turbo
+
+# Configuração da ElevenLabs
+elevenlabs:
+  api:
+    key: ${ELEVENLABS_API_KEY:chave_não_definida}
+    url: https://api.elevenlabs.io/v1
+  voice:
+   # david_trailer: TxGEqnHWrfWFTfGW9XjX
+    david_trailer: ZQe5CZNOzWyzPSCn5a3c
+
+# Configuração do Replicate
+replicate:
+  api:
+    key: ${REPLICATE_API_KEY:chave_não_definida}
+
+# Configuração de geração de áudio
+audio:
+  generation:
+    enabled: false
+
+# Configuração de logging
+logging:
+  level:
+    br.com.devluisoliveira.roteiro: DEBUG
+    org.springframework.cache: INFO
+    org.springframework.web: INFO
+    root: INFO
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} - %-5level - %logger{36} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+  file:
+    name: logs/roteiro.log
+    max-size: 10MB
+    max-history: 7
+
+# Configuração do Spring Boot Actuator
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: when_authorized
+
+
+roteiro:
+  auth:
+    jwtSecret: ktEz5S/6aQXlu2g41GxBWFSKTFEUS7IO2tC81Vga8LLarxbgNGeERs1vWoYGNefrYlxHtKCeD/3KWNLcRKYZiw==
+    jwtExpirationMs: 144000
+
+minio:
+  url: http://localhost:9000
+  access-key: lfpo2005
+  secret-key: 197197197
+  bucket-name: img-roteiro
