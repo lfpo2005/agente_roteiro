@@ -1,7 +1,7 @@
 package br.com.devluisoliveira.agenteroteiro.api.rest.controller;
 
 import br.com.devluisoliveira.agenteroteiro.core.domain.entity.User;
-import br.com.devluisoliveira.agenteroteiro.core.domain.entity.enums.PhilosopherType;
+import br.com.devluisoliveira.agenteroteiro.core.application.service.enums.PhilosopherType;
 
 import br.com.devluisoliveira.agenteroteiro.core.port.in.StoicContentPortIn;
 import br.com.devluisoliveira.agenteroteiro.core.port.in.dto.StoicContentGenerationRequest;

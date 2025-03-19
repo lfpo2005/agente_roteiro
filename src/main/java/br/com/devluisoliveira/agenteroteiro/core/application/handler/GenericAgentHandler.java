@@ -2,8 +2,8 @@ package br.com.devluisoliveira.agenteroteiro.core.application.handler;
 
 import br.com.devluisoliveira.agenteroteiro.core.application.service.OpenAIService;
 import br.com.devluisoliveira.agenteroteiro.core.application.service.PromptTemplateService;
-import br.com.devluisoliveira.agenteroteiro.core.domain.entity.enums.AgentType;
-import br.com.devluisoliveira.agenteroteiro.core.domain.entity.enums.ContentType;
+import br.com.devluisoliveira.agenteroteiro.core.application.service.enums.AgentType;
+import br.com.devluisoliveira.agenteroteiro.core.application.service.enums.ContentType;
 import br.com.devluisoliveira.agenteroteiro.core.port.out.response.dto.ContentGenerationResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

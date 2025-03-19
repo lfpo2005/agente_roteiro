@@ -1,6 +1,6 @@
 package br.com.devluisoliveira.agenteroteiro.core.domain.entity;
 
-import br.com.devluisoliveira.agenteroteiro.core.domain.entity.enums.AgentType;
+import br.com.devluisoliveira.agenteroteiro.core.application.service.enums.AgentType;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.persistence.*;

@@ -1,6 +1,6 @@
 package br.com.devluisoliveira.agenteroteiro.api.rest.controller;
 
-import br.com.devluisoliveira.agenteroteiro.core.domain.entity.enums.DurationType;
+import br.com.devluisoliveira.agenteroteiro.core.application.service.enums.DurationType;
 import br.com.devluisoliveira.agenteroteiro.core.port.out.response.dto.DurationOptionDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;

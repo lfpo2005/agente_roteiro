@@ -1,12 +1,9 @@
 package br.com.devluisoliveira.agenteroteiro.core.application.mapper;
 
-import br.com.devluisoliveira.agenteroteiro.core.domain.entity.enums.ContentType;
-import br.com.devluisoliveira.agenteroteiro.core.port.in.dto.ContentGenerationRequest;
 import br.com.devluisoliveira.agenteroteiro.core.port.in.dto.StoicContentGenerationRequest;
 import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @Component

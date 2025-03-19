@@ -1,8 +1,8 @@
 package br.com.devluisoliveira.agenteroteiro.core.port.in.dto;
 
-import br.com.devluisoliveira.agenteroteiro.core.domain.entity.enums.AgentType;
-import br.com.devluisoliveira.agenteroteiro.core.domain.entity.enums.ContentType;
-import br.com.devluisoliveira.agenteroteiro.core.domain.entity.enums.DurationType;
+import br.com.devluisoliveira.agenteroteiro.core.application.service.enums.AgentType;
+import br.com.devluisoliveira.agenteroteiro.core.application.service.enums.ContentType;
+import br.com.devluisoliveira.agenteroteiro.core.application.service.enums.DurationType;
 import lombok.Getter;
 import lombok.Setter;
 

@@ -1,6 +1,6 @@
 package br.com.devluisoliveira.agenteroteiro.core.application.service;
 
-import br.com.devluisoliveira.agenteroteiro.core.domain.entity.enums.PhilosopherType;
+import br.com.devluisoliveira.agenteroteiro.core.application.service.enums.PhilosopherType;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 

@@ -1,6 +1,6 @@
 package br.com.devluisoliveira.agenteroteiro.core.port.out.response.dto;
 
-import br.com.devluisoliveira.agenteroteiro.core.domain.entity.enums.AgentType;
+import br.com.devluisoliveira.agenteroteiro.core.application.service.enums.AgentType;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

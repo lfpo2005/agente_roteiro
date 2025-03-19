@@ -1,4 +1,4 @@
-package br.com.devluisoliveira.agenteroteiro.core.domain.entity.enums;
+package br.com.devluisoliveira.agenteroteiro.core.application.service.enums;
 
 
 import lombok.Getter;

@@ -1,6 +1,6 @@
 package br.com.devluisoliveira.agenteroteiro.core.port.in.dto;
 
-import br.com.devluisoliveira.agenteroteiro.core.domain.entity.enums.PhilosopherType;
+import br.com.devluisoliveira.agenteroteiro.core.application.service.enums.PhilosopherType;
 import lombok.Getter;
 import lombok.Setter;
 

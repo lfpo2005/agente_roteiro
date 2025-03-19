@@ -1,11 +1,10 @@
 package br.com.devluisoliveira.agenteroteiro.core.application.service;
 
-import br.com.devluisoliveira.agenteroteiro.core.application.handler.StoicAgentHandler;
 import br.com.devluisoliveira.agenteroteiro.core.application.mapper.GenericGeneraMapper;
 import br.com.devluisoliveira.agenteroteiro.core.application.mapper.StoicContentMapper;
+import br.com.devluisoliveira.agenteroteiro.core.application.service.enums.PhilosopherType;
 import br.com.devluisoliveira.agenteroteiro.core.domain.entity.ContentGeneration;
 import br.com.devluisoliveira.agenteroteiro.core.domain.entity.User;
-import br.com.devluisoliveira.agenteroteiro.core.domain.entity.enums.PhilosopherType;
 import br.com.devluisoliveira.agenteroteiro.core.port.in.StoicContentPortIn;
 import br.com.devluisoliveira.agenteroteiro.core.port.in.dto.StoicContentGenerationRequest;
 import br.com.devluisoliveira.agenteroteiro.core.port.out.ContentGenerationPortOut;
@@ -25,8 +24,7 @@ public class StoicContentService implements StoicContentPortIn {
     private final StoicContentMapper stoicContentMapper;
     private final GenericGeneraMapper genericGeneraMapper;
     private final PhilosopherStyleService philosopherStyleService;
-    private final StoicAgentHandler stoicAgentHandler;
-    private final OpenAIService openAIService;
+    private final AgentGenerationService agentGenerationService;
     private final ContentGenerationPortOut contentGenerationPortOut;
 
     @Override
@@ -50,20 +48,11 @@ public class StoicContentService implements StoicContentPortIn {
             String philosopherStyle = philosopherStyleService.getPhilosopherStyle(request.getPhilosopherName());
             request.setPhilosopherStyle(philosopherStyle);
 
-            // Converter a request para Map para processamento pelo handler
+            // Converter a request para Map para processamento pelo AgentGenerationService
             Map<String, Object> requestMap = stoicContentMapper.convertRequestToMap(request);
 
-            // Preparar o prompt específico para conteúdo estoico
-            String prompt = stoicAgentHandler.preparePrompt(requestMap);
-            log.debug("[StoicContentService.generateContent] - Prompt gerado com sucesso");
-
-            // Chamar a API de IA para gerar o conteúdo
-            String aiResponse = openAIService.generateOracao(prompt);
-            log.info("[StoicContentService.generateContent] - Resposta da IA recebida, tamanho: {} caracteres",
-                    aiResponse != null ? aiResponse.length() : 0);
-
-            // Processar a resposta e construir o objeto de resposta
-            ContentGenerationResponse response = stoicAgentHandler.processResponse(aiResponse, requestMap);
+            // Chamar o serviço centralizado para geração de conteúdo
+            ContentGenerationResponse response = agentGenerationService.startGeneration(requestMap);
 
             // Persistir o resultado
             if (response != null && "COMPLETED".equals(response.getStatus())) {
@@ -117,8 +106,6 @@ public class StoicContentService implements StoicContentPortIn {
             request.setPhilosopherName(philosopher.getName());
         }
     }
-
-
 
     private void saveGeneratedContent(User user, ContentGenerationResponse response) {
         try {

@@ -2,8 +2,8 @@ package br.com.devluisoliveira.agenteroteiro.core.application.service;
 
 import br.com.devluisoliveira.agenteroteiro.core.domain.entity.ContentGeneration;
 import br.com.devluisoliveira.agenteroteiro.core.domain.entity.User;
-import br.com.devluisoliveira.agenteroteiro.core.domain.entity.enums.AgentType;
-import br.com.devluisoliveira.agenteroteiro.core.domain.entity.enums.ContentType;
+import br.com.devluisoliveira.agenteroteiro.core.application.service.enums.AgentType;
+import br.com.devluisoliveira.agenteroteiro.core.application.service.enums.ContentType;
 import br.com.devluisoliveira.agenteroteiro.core.port.out.ContentGenerationPortOut;
 import br.com.devluisoliveira.agenteroteiro.core.port.out.response.dto.ContentGenerationResponse;
 import br.com.devluisoliveira.agenteroteiro.core.port.out.response.dto.ContentSummaryDto;
