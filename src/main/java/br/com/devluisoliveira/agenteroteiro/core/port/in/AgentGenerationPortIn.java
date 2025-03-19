@@ -1,4 +1,4 @@
-package br.com.devluisoliveira.agenteroteiro.core.port;
+package br.com.devluisoliveira.agenteroteiro.core.port.in;
 
 import br.com.devluisoliveira.agenteroteiro.core.domain.entity.User;
 import br.com.devluisoliveira.agenteroteiro.core.port.in.dto.ContentGenerationRequest;

@@ -30,6 +30,8 @@ import java.util.stream.Collectors;
 public class StoicAgentHandler implements AgentHandler {
 
     private final PhilosopherStyleService philosopherStyleService;
+    private final OpenAIService openAIService;
+    private final PromptTemplateService promptTemplateService;
 
     private static final String PROMPT_TEMPLATE_PATH = "prompts/prompt_estoicism_specialist.txt";
 
@@ -129,6 +131,8 @@ public class StoicAgentHandler implements AgentHandler {
                 .replace("{language}", nullSafe(language));
 
         // Obter e substituir o estilo do filósofo
+        // Aqui está a otimização: em vez de incluir detalhes redundantes no template,
+        // injetamos apenas o estilo específico do filósofo escolhido
         String philosopherStyle = philosopherStyleService.getPhilosopherStyle(philosopherName);
         customizedTemplate = customizedTemplate.replace("{philosopherStyle}", philosopherStyle);
 
@@ -161,7 +165,7 @@ public class StoicAgentHandler implements AgentHandler {
 
         customizedTemplate = customizedTemplate.replace("{descriptionSection}",
                 shouldIncludeSection(contentTypes, ContentType.DESCRIPTION) ?
-                        "### DESCRIÇÃO DO VÍDEO\n[Descrição otimizada para SEO com 1450 no maximo caracteres]" : "");
+                        "### DESCRIÇÃO DO VÍDEO\n[Descrição otimizada para SEO com 1500-2000 caracteres]" : "");
 
         customizedTemplate = customizedTemplate.replace("{tagsSection}",
                 shouldIncludeSection(contentTypes, ContentType.TAGS) ?
@@ -182,6 +186,9 @@ public class StoicAgentHandler implements AgentHandler {
         customizedTemplate = customizedTemplate.replace("{shortVersionSection}",
                 shouldIncludeSection(contentTypes, ContentType.SHORTS_IDEA) ?
                         "### VERSÃO CURTA\n[Versão condensada de 60-90 segundos para Shorts]" : "");
+
+        // Logar tamanho do prompt para monitoramento de tokens
+        log.debug("[StoicAgentHandler.customizeTemplate] - Prompt final com {} caracteres", customizedTemplate.length());
 
         return customizedTemplate;
     }

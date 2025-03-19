@@ -22,7 +22,7 @@ public class ContentGeneration {
     @Id
     private UUID contentId;
 
-    @Column(nullable = false, length = 100)
+    @Column(nullable = false, length = 255)
     private String title;
 
     @Column(nullable = false)
@@ -45,12 +45,26 @@ public class ContentGeneration {
     @Column(length = 600)
     private String tags;
 
+    @Lob
+    @Column(name = "additional_content")
+    private String additionalContent;
+
+    @Column(name = "prompt_used", length = 1000)
+    private String promptUsed;
+
     @Column(nullable = false, updatable = false)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd'T'HH:mm:ss'Z'")
     private LocalDateTime createdAt;
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd'T'HH:mm:ss'Z'")
+    private LocalDateTime updatedAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
+    @PreUpdate
+    protected void onUpdate() {
+        updatedAt = LocalDateTime.now();
+    }
 }

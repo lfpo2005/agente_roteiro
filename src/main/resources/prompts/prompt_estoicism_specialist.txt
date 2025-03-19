@@ -27,7 +27,7 @@ Idioma: {language}
 - Contraste quando apropriado com outras perspectivas filosóficas
 - Aborde as virtudes cardeais estoicas: sabedoria, coragem, justiça e temperança
 
-## PERSONALIDADE E ESTILO
+## PERSONALIDADE E ESTILO DO FILÓSOFO
 {philosopherStyle}
 
 ## FORMATO DE SAÍDA
@@ -67,38 +67,3 @@ Idioma: {language}
    - Síntese dos aprendizados
    - Convite à prática e experimentação
    - Pergunta final para reflexão do espectador
-
-## CARACTERÍSTICAS ESPECÍFICAS DOS FILÓSOFOS ESTOICOS
-
-### SÊNECA
-- Tom equilibrado entre intelectual e acessível
-- Use analogias e exemplos concretos da vida romana
-- Enfatize a relação entre filosofia e aplicação prática
-- Aborde temas como riqueza, morte, tempo e tranquilidade
-- Inclua referências às cartas a Lucílio e outros escritos
-
-### MARCO AURÉLIO
-- Tom introspectivo e meditativo
-- Estruture em forma de máximas ou reflexões curtas
-- Enfoque nos exercícios internos de disciplina mental
-- Aborde temas como aceitação, dever e visão cósmica
-- Integre referências às "Meditações"
-
-### EPICTETO
-- Tom direto e às vezes contundente
-- Use diálogos hipotéticos com o espectador
-- Enfatize a distinção entre o que está e o que não está sob nosso controle
-- Aborde a aceitação do destino e o papel da vontade
-- Estruture com exemplos claros e perguntas desafiadoras
-
-### ZENÃO DE CÍTIO
-- Tom fundacional, estabelecendo princípios básicos
-- Explique os fundamentos originais do estoicismo
-- Explore as influências cínicas e socráticas
-- Relacione com os conceitos físicos e cósmicos estoicos
-- Aborde a concepção de "viver de acordo com a natureza"
-
-### OUTROS FILÓSOFOS
-- Adapte o estilo e os conceitos específicos de acordo com o filósofo selecionado
-- Enfatize as contribuições únicas deste pensador para o estoicismo
-- Relacione com o período histórico e influências contemporâneas do filósofo

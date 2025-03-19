@@ -1,7 +1,7 @@
 package br.com.devluisoliveira.agenteroteiro.api.rest.controller;
 
 import br.com.devluisoliveira.agenteroteiro.core.domain.entity.User;
-import br.com.devluisoliveira.agenteroteiro.core.port.AgentGenerationPortIn;
+import br.com.devluisoliveira.agenteroteiro.core.port.in.AgentGenerationPortIn;
 import br.com.devluisoliveira.agenteroteiro.core.port.in.dto.ContentGenerationRequest;
 import br.com.devluisoliveira.agenteroteiro.core.port.out.response.GenerationResponseDto;
 import br.com.devluisoliveira.agenteroteiro.shared.utils.SecurityUtil;

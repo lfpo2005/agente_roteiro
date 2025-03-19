@@ -1,4 +1,4 @@
-package br.com.devluisoliveira.agenteroteiro.core.port.out.response.dto;
+package br.com.devluisoliveira.agenteroteiro.core.port.out;
 
 import br.com.devluisoliveira.agenteroteiro.core.domain.entity.ContentGeneration;
 import br.com.devluisoliveira.agenteroteiro.core.domain.entity.User;
@@ -38,14 +38,6 @@ public interface ContentGenerationPortOut {
      * @return Página de conteúdos do usuário
      */
     Page<ContentGeneration> findByUser(User user, Pageable pageable);
-
-    /**
-     * Conta o número de conteúdos de um usuário
-     *
-     * @param user Usuário
-     * @return Número de conteúdos
-     */
-    Long countByUser(User user);
 
     /**
      * Exclui um conteúdo pelo ID
