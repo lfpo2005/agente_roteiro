@@ -41,14 +41,14 @@ public class StoicContentController {
     @PostMapping("/generate")
     public ResponseEntity<ContentGenerationResponse> generateStoicContent(
             @RequestBody @Valid StoicContentGenerationRequest request) {
-
         User user = securityUtil.getLoggedInUser();
 
         if (request.getProcessId() == null || request.getProcessId().trim().isEmpty()) {
             request.setProcessId(UUID.randomUUID().toString());
         }
 
-        log.info("Recebida solicitação para geração de conteúdo estoico do usuário: {}, filósofo: {}, tema: {}",
+        log.info("Recebida solicitação para geração de conteúdo estoico do usuário: {}, filósofo: {}," +
+                        " tema: {}",
                 user.getUsername(), request.getPhilosopherName(), request.getTheme());
 
         ContentGenerationResponse response = stoicContentPortIn.generateContent(user, request);

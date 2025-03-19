@@ -32,8 +32,7 @@ build/
 ### VS Code ###
 .vscode/
 .env
-.extras/**
-.extras/
-.logs/**
-/extras/
-/logs/
+
+### Custom ###
+extras/
+logs/
