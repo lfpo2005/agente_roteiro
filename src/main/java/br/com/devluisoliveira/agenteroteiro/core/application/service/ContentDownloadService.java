@@ -1,7 +1,7 @@
 package br.com.devluisoliveira.agenteroteiro.core.application.service;
 
 import br.com.devluisoliveira.agenteroteiro.core.domain.entity.ContentGeneration;
-import br.com.devluisoliveira.agenteroteiro.core.port.out.response.dto.ContentGenerationPortOut;
+import br.com.devluisoliveira.agenteroteiro.core.port.out.ContentGenerationPortOut;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.ByteArrayResource;

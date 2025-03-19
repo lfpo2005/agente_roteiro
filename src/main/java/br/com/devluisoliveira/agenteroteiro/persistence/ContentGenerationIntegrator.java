@@ -2,7 +2,7 @@ package br.com.devluisoliveira.agenteroteiro.persistence;
 
 import br.com.devluisoliveira.agenteroteiro.core.domain.entity.ContentGeneration;
 import br.com.devluisoliveira.agenteroteiro.core.domain.entity.User;
-import br.com.devluisoliveira.agenteroteiro.core.port.out.response.dto.ContentGenerationPortOut;
+import br.com.devluisoliveira.agenteroteiro.core.port.out.ContentGenerationPortOut;
 import br.com.devluisoliveira.agenteroteiro.persistence.repository.ContentGenerationRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

@@ -22,7 +22,7 @@ public class ContentGenerationResponse {
     private String description;
     private String audio;
     private String tags;
-
+    private String promptUsed;
     private String status = "COMPLETED";
     private String message;
 }

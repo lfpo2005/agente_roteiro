@@ -5,18 +5,15 @@ import br.com.devluisoliveira.agenteroteiro.core.application.mapper.GenericGener
 import br.com.devluisoliveira.agenteroteiro.core.application.mapper.StoicContentMapper;
 import br.com.devluisoliveira.agenteroteiro.core.domain.entity.ContentGeneration;
 import br.com.devluisoliveira.agenteroteiro.core.domain.entity.User;
-import br.com.devluisoliveira.agenteroteiro.core.domain.entity.enums.ContentType;
 import br.com.devluisoliveira.agenteroteiro.core.domain.entity.enums.PhilosopherType;
 import br.com.devluisoliveira.agenteroteiro.core.port.in.StoicContentPortIn;
-import br.com.devluisoliveira.agenteroteiro.core.port.in.dto.ContentGenerationRequest;
 import br.com.devluisoliveira.agenteroteiro.core.port.in.dto.StoicContentGenerationRequest;
-import br.com.devluisoliveira.agenteroteiro.core.port.out.response.dto.ContentGenerationPortOut;
+import br.com.devluisoliveira.agenteroteiro.core.port.out.ContentGenerationPortOut;
 import br.com.devluisoliveira.agenteroteiro.core.port.out.response.dto.ContentGenerationResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 

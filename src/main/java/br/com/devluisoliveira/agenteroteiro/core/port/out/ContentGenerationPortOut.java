@@ -40,6 +40,14 @@ public interface ContentGenerationPortOut {
     Page<ContentGeneration> findByUser(User user, Pageable pageable);
 
     /**
+     * Conta o número de conteúdos de um usuário
+     *
+     * @param user Usuário
+     * @return Número de conteúdos
+     */
+    Long countByUser(User user);
+
+    /**
      * Exclui um conteúdo pelo ID
      *
      * @param contentId ID do conteúdo a ser excluído
