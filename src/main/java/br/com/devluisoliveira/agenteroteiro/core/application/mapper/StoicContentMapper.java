@@ -5,73 +5,36 @@ import br.com.devluisoliveira.agenteroteiro.core.port.in.dto.ContentGenerationRe
 import br.com.devluisoliveira.agenteroteiro.core.port.in.dto.StoicContentGenerationRequest;
 import org.springframework.stereotype.Component;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Component
 public class StoicContentMapper {
 
 
+    public Map<String, Object> convertRequestToMap(StoicContentGenerationRequest request) {
+        Map<String, Object> requestMap = new HashMap<>();
 
-    public ContentGenerationRequest convertToStandardRequest(StoicContentGenerationRequest stoicRequest) {
-        ContentGenerationRequest request = new ContentGenerationRequest();
+        // Mapear propriedades básicas
+        requestMap.put("processId", request.getProcessId());
+        requestMap.put("title", request.getTitle());
+        requestMap.put("theme", request.getTheme());
+        requestMap.put("notes", request.getNotes());
+        requestMap.put("targetDuration", request.getTargetDuration());
+        requestMap.put("language", request.getLanguage());
+        requestMap.put("contentTypes", request.getContentTypes());
+        requestMap.put("generateShortVersion", request.getGenerateShortVersion());
+        requestMap.put("generateAudio", request.getGenerateAudio());
+        requestMap.put("voiceType", request.getVoiceType());
 
-        request.setProcessId(stoicRequest.getProcessId());
-        request.setAgentType(stoicRequest.getAgentType());
-        request.setContentTypes(stoicRequest.getContentTypes());
-        request.setTitle(stoicRequest.getTitle());
-        request.setTheme(stoicRequest.getTheme());
-        request.setNotes(stoicRequest.getNotes());
-        request.setTargetAudience(stoicRequest.getTargetAudience());
-        request.setToneStyle(stoicRequest.getToneStyle());
-        request.setTargetDuration(stoicRequest.getTargetDuration());
-        request.setLanguage(stoicRequest.getLanguage());
-        request.setGenerateAudio(stoicRequest.getGenerateAudio());
-        request.setVoiceType(stoicRequest.getVoiceType());
-        request.setGenerateShortVersion(stoicRequest.getGenerateShortVersion());
-        request.setIncludeCallToAction(stoicRequest.getIncludeCallToAction());
-        request.setOptimizeForSEO(stoicRequest.getOptimizeForSEO());
+        // Mapear propriedades específicas de conteúdo estoico
+        requestMap.put("philosopherName", request.getPhilosopherName());
+        requestMap.put("philosopherStyle", request.getPhilosopherStyle());
+        requestMap.put("stoicConcept", request.getStoicConcept());
+        requestMap.put("practicalApplication", request.getPracticalApplication());
+        requestMap.put("additionalContext", request.getAdditionalContext());
 
-        // Adiciona informações específicas do estoicismo ao contexto adicional
-        StringBuilder additionalContext = new StringBuilder();
-
-        // Adiciona o nome do filósofo
-        additionalContext.append("Filósofo Estoico: ").append(stoicRequest.getPhilosopherName()).append("\n\n");
-
-        // Adiciona conceito estoico específico se fornecido
-        if (stoicRequest.getStoicConcept() != null && !stoicRequest.getStoicConcept().isEmpty()) {
-            additionalContext.append("Conceito Estoico: ").append(stoicRequest.getStoicConcept()).append("\n\n");
-        }
-
-        // Adiciona aplicação prática se fornecida
-        if (stoicRequest.getPracticalApplication() != null && !stoicRequest.getPracticalApplication().isEmpty()) {
-            additionalContext.append("Aplicação Prática: ").append(stoicRequest.getPracticalApplication()).append("\n\n");
-        }
-
-        // Adiciona qualquer contexto adicional fornecido
-        if (stoicRequest.getAdditionalContext() != null && !stoicRequest.getAdditionalContext().isEmpty()) {
-            additionalContext.append("Contexto Adicional: ").append(stoicRequest.getAdditionalContext());
-        }
-
-        request.setAdditionalContext(additionalContext.toString());
-
-        // Se não tiver solicitado tipos de conteúdo específicos, adiciona os padrões para vídeos de 15 minutos
-        if (request.getContentTypes() == null || request.getContentTypes().isEmpty()) {
-            request.setContentTypes(List.of(
-                    ContentType.TITLE,
-                    ContentType.DESCRIPTION,
-                    ContentType.TAGS,
-                    ContentType.SCRIPT
-            ));
-        }
-
-        // Se for um vídeo mais longo (30 min), assumir que é mais abrangente
-        if (request.getTargetDuration() != null && request.getTargetDuration() >= 30) {
-            // Se ainda não estiver incluído, adicionar THUMBNAIL_IDEA para vídeos longos
-            if (!request.getContentTypes().contains(ContentType.THUMBNAIL_IDEA)) {
-                request.getContentTypes().add(ContentType.THUMBNAIL_IDEA);
-            }
-        }
-
-        return request;
+        return requestMap;
     }
 }

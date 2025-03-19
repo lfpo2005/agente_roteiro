@@ -3,6 +3,7 @@ package br.com.devluisoliveira.agenteroteiro.core.application.service;
 import br.com.devluisoliveira.agenteroteiro.core.domain.entity.enums.AgentType;
 import br.com.devluisoliveira.agenteroteiro.core.domain.entity.enums.ContentType;
 import br.com.devluisoliveira.agenteroteiro.core.port.in.dto.ContentGenerationRequest;
+import br.com.devluisoliveira.agenteroteiro.core.port.in.dto.StoicContentGenerationRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.ClassPathResource;
@@ -55,17 +56,17 @@ public class PromptTemplateService {
     }
 
 
-    public String loadStoicPromptTemplate(StoicContentGenerationRequest request, PhilosopherStyleService styleService) {
-        // Carregar template base
-        String baseTemplate = loadTemplateFile(AgentType.STOICISM);
-
-        // Personalizar com estilo do filósofo específico
-        String philosopherStyle = styleService.getPhilosopherStyle(request.getPhilosopherName());
-        baseTemplate = baseTemplate.replace("{philosopherStyle}", philosopherStyle);
-
-        // Continuar com outras personalizações
-        return personalizeTemplate(baseTemplate, convertToStandardRequest(request));
-    }
+//    public String loadStoicPromptTemplate(StoicContentGenerationRequest request, PhilosopherStyleService styleService) {
+//        // Carregar template base
+//        String baseTemplate = loadTemplateFile(AgentType.STOICISM);
+//
+//        // Personalizar com estilo do filósofo específico
+//        String philosopherStyle = styleService.getPhilosopherStyle(request.getPhilosopherName());
+//        baseTemplate = baseTemplate.replace("{philosopherStyle}", philosopherStyle);
+//
+//        // Continuar com outras personalizações
+//        return personalizeTemplate(baseTemplate, convertToStandardRequest(request));
+//    }
 
     /**
      * Carrega o arquivo de template para o tipo de agente especificado

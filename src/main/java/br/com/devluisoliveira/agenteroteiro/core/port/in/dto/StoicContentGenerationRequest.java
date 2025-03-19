@@ -1,6 +1,5 @@
 package br.com.devluisoliveira.agenteroteiro.core.port.in.dto;
 
-import br.com.devluisoliveira.agenteroteiro.core.domain.entity.enums.AgentType;
 import br.com.devluisoliveira.agenteroteiro.core.domain.entity.enums.PhilosopherType;
 import lombok.Getter;
 import lombok.Setter;
@@ -8,8 +7,6 @@ import lombok.Setter;
 @Setter
 @Getter
 public class StoicContentGenerationRequest extends ContentGenerationRequest {
-
-    private final AgentType agentType = AgentType.EDUCATION;
 
     // Filósofo estoico selecionado
     private PhilosopherType philosopher;

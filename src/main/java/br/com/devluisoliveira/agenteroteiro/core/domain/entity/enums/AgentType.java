@@ -5,8 +5,8 @@ import lombok.Getter;
 
 @Getter
 public enum AgentType {
-    GENERIC("Agente Genérico", "prompt_base_generico.txt"),
-    STOICISM("Agente Estóico", "prompt_base_estoico.txt");
+    GENERIC("Agente Genérico", "prompt/prompt_base_generico.txt"),
+    STOICISM("Agente Estóico", "prompt/prompt_estoicism_specialist.txt");
 
     private final String description;
     private final String promptTemplate;
