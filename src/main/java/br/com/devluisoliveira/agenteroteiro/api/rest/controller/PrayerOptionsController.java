@@ -1,7 +1,7 @@
 package br.com.devluisoliveira.agenteroteiro.api.rest.controller;
 
-import br.com.devluisoliveira.agenteroteiro.core.domain.entity.enums.PrayerStyle;
-import br.com.devluisoliveira.agenteroteiro.core.domain.entity.enums.PrayerType;
+import br.com.devluisoliveira.agenteroteiro.core.application.service.enums.PrayerStyle;
+import br.com.devluisoliveira.agenteroteiro.core.application.service.enums.PrayerType;
 import br.com.devluisoliveira.agenteroteiro.core.port.out.response.dto.PrayerOptionDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
