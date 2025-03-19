@@ -2,6 +2,7 @@ package br.com.devluisoliveira.agenteroteiro.core.port.in.dto;
 
 import br.com.devluisoliveira.agenteroteiro.core.domain.entity.enums.AgentType;
 import br.com.devluisoliveira.agenteroteiro.core.domain.entity.enums.ContentType;
+import br.com.devluisoliveira.agenteroteiro.core.domain.entity.enums.DurationType;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -27,7 +28,7 @@ public class ContentGenerationRequest {
     private String videoTopic;
     private String targetAudience;
     private String toneStyle;
-    private Integer targetDuration;
+    private DurationType durationType = DurationType.MINUTES_10;
 
     // Parâmetros opcionais para personalização
     private String additionalContext;
@@ -39,5 +40,36 @@ public class ContentGenerationRequest {
     private Boolean generateAudio = false;
     private String voiceType; // Id da voz ou tipo (masculina/feminina...)
     private Boolean generateShortVersion = false;
+
+
+    public Integer getTargetDuration() {
+        return durationType != null ? durationType.getDurationInMinutes() : 10;
+    }
+
+    /**
+     * Método de conveniência para compatibilidade retroativa
+     * @param minutes Duração em minutos
+     */
+    public void setTargetDuration(Integer minutes) {
+        if (minutes != null) {
+            this.durationType = DurationType.findClosest(minutes);
+        }
+    }
+
+    /**
+     * Retorna o número estimado de palavras com base na duração
+     * @return Número estimado de palavras
+     */
+    public int getEstimatedWordCount() {
+        return durationType != null ? durationType.getEstimatedWordCount() : 1300; // 10 min default
+    }
+
+    /**
+     * Retorna o número estimado de caracteres com base na duração
+     * @return Número estimado de caracteres
+     */
+    public int getEstimatedCharacterCount() {
+        return durationType != null ? durationType.getEstimatedCharacterCount() : 7500; // 10 min default
+    }
 
 }
