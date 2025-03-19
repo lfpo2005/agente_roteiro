@@ -67,22 +67,12 @@ public class PrayerContentGenerationRequest extends ContentGenerationRequest {
     }
 
     /**
-     * Validação básica da requisição
-     * @return true se a requisição está válida
-     */
-    public boolean isValid() {
-        // Pelo menos o tema ou a passagem bíblica devem estar preenchidos
-        return (prayerTheme != null && !prayerTheme.trim().isEmpty()) ||
-                (biblePassage != null && !biblePassage.trim().isEmpty());
-    }
-
-    /**
      * Construtor para criar uma requisição com campos obrigatórios
      * @param prayerType Tipo de oração
      * @param prayerStyle Estilo da oração
      * @param prayerTheme Tema da oração
      */
-    public PrayerGenerationRequest(PrayerType prayerType, PrayerStyle prayerStyle, String prayerTheme) {
+    public PrayerContentGenerationRequest(PrayerType prayerType, PrayerStyle prayerStyle, String prayerTheme) {
         this.prayerType = prayerType;
         this.prayerStyle = prayerStyle;
         this.prayerTheme = prayerTheme;
