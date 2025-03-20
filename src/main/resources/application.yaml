@@ -7,7 +7,7 @@ spring:
   application:
     name: roteiro
   datasource:
-    url: jdbc:postgresql://localhost:5432/erp-dev
+    url: jdbc:postgresql://localhost:5432/roteiro-postgres
     username: postgres
     password: sHDv7kCSisihnOfS3l7k
     driver-class-name: org.postgresql.Driver

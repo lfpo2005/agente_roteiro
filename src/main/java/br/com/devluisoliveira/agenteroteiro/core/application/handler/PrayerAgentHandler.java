@@ -1,7 +1,7 @@
 package br.com.devluisoliveira.agenteroteiro.core.application.handler;
 
 import br.com.devluisoliveira.agenteroteiro.core.application.service.OpenAIService;
-import br.com.devluisoliveira.agenteroteiro.core.application.service.PrayerStyleService;
+import br.com.devluisoliveira.agenteroteiro.core.application.service.agentStyle.PrayerStyleService;
 import br.com.devluisoliveira.agenteroteiro.core.application.service.PromptTemplateService;
 import br.com.devluisoliveira.agenteroteiro.core.application.service.enums.AgentType;
 import br.com.devluisoliveira.agenteroteiro.core.application.service.enums.ContentType;

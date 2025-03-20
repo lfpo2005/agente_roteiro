@@ -10,9 +10,9 @@ services:
 
   postgres:
     image: postgres:latest
-    container_name: "erp-postgres"
+    container_name: roteiro-postgres
     environment:
-      - POSTGRES_DB=erp-dev
+      - POSTGRES_DB=roteiro-postgres
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=sHDv7kCSisihnOfS3l7k
     ports:

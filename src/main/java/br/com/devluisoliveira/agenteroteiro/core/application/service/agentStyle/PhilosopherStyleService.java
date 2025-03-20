@@ -1,4 +1,4 @@
-package br.com.devluisoliveira.agenteroteiro.core.application.service;
+package br.com.devluisoliveira.agenteroteiro.core.application.service.agentStyle;
 
 import br.com.devluisoliveira.agenteroteiro.core.application.service.enums.PhilosopherType;
 import lombok.extern.slf4j.Slf4j;

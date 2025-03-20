@@ -1,4 +1,4 @@
-package br.com.devluisoliveira.agenteroteiro.core.application.service;
+package br.com.devluisoliveira.agenteroteiro.core.application.service.agentStyle;
 
 import br.com.devluisoliveira.agenteroteiro.core.application.service.enums.PrayerStyle;
 import br.com.devluisoliveira.agenteroteiro.core.application.service.enums.PrayerType;
@@ -206,6 +206,28 @@ public class PrayerStyleService {
         return PRAYER_TYPE_CHARACTERISTICS.getOrDefault(
                 prayerType.name(),
                 PRAYER_TYPE_CHARACTERISTICS.get("DEFAULT"));
+    }
+
+    /**
+     * Método padronizado para obter o estilo de oração
+     * Similar ao método getPhilosopherStyle do PhilosopherStyleService
+     *
+     * @param prayerStyle Estilo de oração
+     * @return String com características do estilo
+     */
+    public String getPrayerStyle(PrayerStyle prayerStyle) {
+        return getPrayerStyleCharacteristics(prayerStyle);
+    }
+
+    /**
+     * Método padronizado para obter o estilo de oração combinado com o tipo
+     *
+     * @param prayerStyle Estilo de oração
+     * @param prayerType Tipo de oração
+     * @return String com características combinadas de estilo e tipo
+     */
+    public String getPrayerStyle(PrayerStyle prayerStyle, PrayerType prayerType) {
+        return getCombinedPrayerCharacteristics(prayerStyle, prayerType);
     }
 
     /**

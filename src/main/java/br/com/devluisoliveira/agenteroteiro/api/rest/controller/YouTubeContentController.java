@@ -18,6 +18,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.UUID;
+
 @RestController
 @RequestMapping("/youtube")
 @RequiredArgsConstructor
@@ -55,9 +57,41 @@ public class YouTubeContentController {
     public ResponseEntity<ContentGenerationResponse> checkGenerationStatus(
             @PathVariable String processId) {
 
-        // Implementar lógica para verificar o status de uma geração em andamento
-        // Isso seria útil se o processo for assíncrono
+        log.info("Verificando status da geração para processId: {}", processId);
 
-        return ResponseEntity.ok(new ContentGenerationResponse()); // Implementar adequadamente
+        try {
+            User user = securityUtil.getLoggedInUser();
+
+            ContentGenerationResponse serviceResponse = contentGenerationService.checkGenerationStatus(processId, user);
+
+            ContentGenerationResponse response = ContentGenerationResponse.builder()
+                    .processId(serviceResponse.getProcessId())
+                    .status(serviceResponse.getStatus())
+                    .message(serviceResponse.getMessage())
+                    .title(serviceResponse.getTitle())
+                    .build();
+
+            return ResponseEntity.ok(response);
+        } catch (IllegalArgumentException e) {
+            log.error("UUID inválido: {}", processId, e);
+
+            ContentGenerationResponse errorResponse = ContentGenerationResponse.builder()
+                    .processId(null)
+                    .status("ERROR")
+                    .message("ID de processo inválido: " + e.getMessage())
+                    .build();
+
+            return ResponseEntity.badRequest().body(errorResponse);
+        } catch (Exception e) {
+            log.error("Erro ao verificar status da geração: {}", processId, e);
+
+            ContentGenerationResponse errorResponse = ContentGenerationResponse.builder()
+                    .processId(null)
+                    .status("ERROR")
+                    .message("Erro ao verificar status: " + e.getMessage())
+                    .build();
+
+            return ResponseEntity.status(500).body(errorResponse);
+        }
     }
 }

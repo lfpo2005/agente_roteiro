@@ -1,8 +1,8 @@
 package br.com.devluisoliveira.agenteroteiro.core.application.service;
 
 import br.com.devluisoliveira.agenteroteiro.core.application.mapper.GenericGeneraMapper;
+import br.com.devluisoliveira.agenteroteiro.core.application.service.agentStyle.PrayerStyleService;
 import br.com.devluisoliveira.agenteroteiro.core.application.service.enums.AgentType;
-import br.com.devluisoliveira.agenteroteiro.core.application.service.enums.PrayerStyle;
 import br.com.devluisoliveira.agenteroteiro.core.application.service.enums.PrayerType;
 import br.com.devluisoliveira.agenteroteiro.core.domain.entity.ContentGeneration;
 import br.com.devluisoliveira.agenteroteiro.core.domain.entity.User;
@@ -126,10 +126,10 @@ public class PrayerContentService implements PrayerContentPortIn {
             }
 
             // Gerar prompt para versão curta
-            String shortPrompt = PromptBuilder.buildShortPrompt(
+            String shortPrompt = promptTemplateService.buildShortPrompt(
                     original.getText(),
                     original.getTitle(),
-                    "pt-BR" // Assumindo português, ajuste conforme necessário
+                    "pt-BR"
             );
 
             // Chamar a API para gerar a versão curta
@@ -239,7 +239,7 @@ public class PrayerContentService implements PrayerContentPortIn {
 
         // Melhorar o título com emojis apropriados se não tiver
         if (response.getTitle() != null && !response.getTitle().contains("🙏") && !response.getTitle().contains("✝️")) {
-            String enhancedTitle = addPrayerEmojis(response.getTitle());
+            String enhancedTitle = this.addPrayerEmojis(response.getTitle());
             response.setTitle(enhancedTitle);
         }
 
@@ -258,13 +258,15 @@ public class PrayerContentService implements PrayerContentPortIn {
      * @return Título com emojis
      */
     private String addPrayerEmojis(String title) {
-        // Verificar se já tem emojis
-        if (title.matches(".*[\\p{Emoji}].*")) {
-            return title;
-        }
-
         // Emojis relacionados a orações
         String[] prayerEmojis = {"🙏", "✝️", "📖", "❤️", "✨", "🕊️", "🛐", "⛪", "🌟"};
+
+        // Verificar se já tem emojis da nossa lista
+        for (String emoji : prayerEmojis) {
+            if (title.contains(emoji)) {
+                return title; // Já tem emoji, retornar como está
+            }
+        }
 
         // Selecionar 1-2 emojis aleatórios
         int numEmojis = 1 + (int)(Math.random() * 2); // 1 ou 2
@@ -367,8 +369,11 @@ public class PrayerContentService implements PrayerContentPortIn {
 
         try {
             // Construir prompt para descrição
-            String descriptionPrompt = PromptBuilder.buildDescriptionPrompt(title, text, language);
-
+            String descriptionPrompt = promptTemplateService.buildDescriptionPrompt(
+                    title,
+                    text,
+                    language
+            );
             // Gerar descrição
             String description = openAIService.generateDescription(descriptionPrompt);
 
@@ -387,17 +392,17 @@ public class PrayerContentService implements PrayerContentPortIn {
      * Gera uma rotina de oração personalizada
      * @param user Usuário solicitante
      * @param religiousTradition Tradição religiosa
-     * @param denomination Denominação específica
      * @param durationMinutes Duração em minutos
      * @param timeOfDay Momento do dia
      * @param intentions Intenções específicas
      * @param language Idioma
      * @return Resposta com a rotina de oração
      */
+
+    @Override
     public ContentGenerationResponse generatePrayerRoutine(
             User user,
             String religiousTradition,
-            String denomination,
             Integer durationMinutes,
             String timeOfDay,
             String intentions,
@@ -407,9 +412,8 @@ public class PrayerContentService implements PrayerContentPortIn {
 
         try {
             // Construir prompt para rotina
-            String routinePrompt = PromptBuilder.buildPrayerRoutinePrompt(
+            String routinePrompt = promptTemplateService.loadPrayerPromptTemplate(
                     religiousTradition,
-                    denomination,
                     durationMinutes,
                     timeOfDay,
                     intentions,

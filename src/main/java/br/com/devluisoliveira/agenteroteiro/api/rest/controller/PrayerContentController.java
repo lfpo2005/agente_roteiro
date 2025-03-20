@@ -94,7 +94,7 @@ public class PrayerContentController {
                 religiousTradition, durationMinutes);
 
         ContentGenerationResponse response = prayerContentPortIn.generatePrayerRoutine(
-                user, religiousTradition, denomination, durationMinutes, timeOfDay, intentions, language);
+                user, religiousTradition, durationMinutes, timeOfDay, intentions, language);
 
         return ResponseEntity.ok(response);
     }

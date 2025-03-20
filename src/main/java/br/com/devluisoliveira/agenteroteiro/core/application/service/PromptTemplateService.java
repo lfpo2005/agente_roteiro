@@ -1,10 +1,11 @@
 package br.com.devluisoliveira.agenteroteiro.core.application.service;
 
+import br.com.devluisoliveira.agenteroteiro.core.application.service.agentStyle.impl.StyleApplier;
 import br.com.devluisoliveira.agenteroteiro.core.application.service.enums.AgentType;
 import br.com.devluisoliveira.agenteroteiro.core.application.service.enums.ContentType;
 import br.com.devluisoliveira.agenteroteiro.core.port.in.dto.ContentGenerationRequest;
+import br.com.devluisoliveira.agenteroteiro.core.port.in.dto.PrayerContentGenerationRequest;
 import br.com.devluisoliveira.agenteroteiro.core.port.in.dto.StoicContentGenerationRequest;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
@@ -15,64 +16,60 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
+/**
+ * Serviço responsável por carregar e personalizar templates de prompt
+ * para diferentes tipos de agentes usando o padrão Strategy
+ */
 @Service
-@RequiredArgsConstructor
 @Slf4j
 public class PromptTemplateService {
 
-    private final PhilosopherStyleService philosopherStyleService;
+    private final Map<AgentType, StyleApplier> styleAppliers;
 
-        /**
-     * Carrega e personaliza o template de prompt para o tipo de agente especificado
+    /**
+     * Construtor que inicializa o mapa de StyleAppliers usando injeção de dependência
+     * @param appliers Lista de StyleAppliers disponíveis
      */
-    public String loadPromptTemplate(ContentGenerationRequest request) {
+    public PromptTemplateService(List<StyleApplier> appliers) {
+        this.styleAppliers = appliers.stream()
+                .collect(Collectors.toMap(
+                        StyleApplier::getSupportedAgentType,
+                        Function.identity(),
+                        (existing, replacement) -> existing // Em caso de conflito, manter o existente
+                ));
+        log.info("PromptTemplateService inicializado com {} StyleAppliers", appliers.size());
+    }
+
+    /**
+     * Método principal para carregar e personalizar o template de acordo com o tipo de requisição
+     */
+    public String loadTemplateForRequest(ContentGenerationRequest request) {
         try {
             // Carregar o template base do arquivo
             String baseTemplate = loadTemplateFile(request.getAgentType());
 
-            // Personalizar o template com os dados da requisição
-            return personalizeTemplate(baseTemplate, request);
-
-        } catch (Exception e) {
-            log.error("Erro ao carregar template de prompt para o agente {}: {}",
-                    request.getAgentType(), e.getMessage());
-            // Em caso de erro, usar template genérico
-            try {
-                return loadTemplateFile(AgentType.GENERIC);
-            } catch (Exception ex) {
-                log.error("Erro ao carregar template genérico: {}", ex.getMessage());
-                return "# Erro ao carregar template\nPor favor, gere conteúdo para YouTube sobre: " +
-                        (request.getTitle() != null ? request.getTitle() : "tema não especificado");
+            // Aplicar o estilo específico do agente (se disponível)
+            StyleApplier styleApplier = styleAppliers.get(request.getAgentType());
+            if (styleApplier != null) {
+                baseTemplate = styleApplier.applyStyle(baseTemplate, request);
+                log.debug("Aplicado estilo específico para agente: {}", request.getAgentType());
             }
-        }
-    }
 
-    /**
-     * Carrega e personaliza o template para conteúdo estoico
-     */
-    public String loadStoicPromptTemplate(StoicContentGenerationRequest request) {
-        try {
-            // Carregar template base
-            String baseTemplate = loadTemplateFile(AgentType.STOICISM);
-
-            // Obter estilo do filósofo escolhido
-            String philosopherName = request.getPhilosopherName();
-            String philosopherStyle = philosopherStyleService.getPhilosopherStyle(philosopherName);
-
-            // Personalizar o template com o estilo do filósofo e outros dados
-            baseTemplate = baseTemplate.replace("{philosopherStyle}", philosopherStyle);
-
-            // Continuar com outras personalizações
+            // Continuar com personalizações genéricas
             return personalizeTemplate(baseTemplate, request);
 
         } catch (Exception e) {
-            log.error("Erro ao carregar template estoico: {}", e.getMessage(), e);
-            return "# Erro ao carregar template\nPor favor, gere conteúdo estoico para YouTube sobre: " +
-                    (request.getTitle() != null ? request.getTitle() : "tema não especificado") +
-                    " no estilo do filósofo " + request.getPhilosopherName();
+            log.error("Erro ao carregar template para o agente {}: {}",
+                    request.getAgentType(), e.getMessage(), e);
+
+            // Em caso de erro, retornar um template genérico
+            return "# Erro ao carregar template\nPor favor, gere conteúdo para YouTube sobre: " +
+                    (request.getTitle() != null ? request.getTitle() : "tema não especificado");
         }
     }
 
@@ -107,11 +104,14 @@ public class PromptTemplateService {
         replacements.put("{additionalContext}", nullSafe(request.getAdditionalContext()));
 
         // Formatar a lista de tipos de conteúdo
-        String contentTypesFormatted = request.getContentTypes().stream()
-                .map(ContentType::getLabel)
-                .collect(Collectors.joining("\n- "));
-        if (!contentTypesFormatted.isEmpty()) {
-            contentTypesFormatted = "- " + contentTypesFormatted;
+        String contentTypesFormatted = "";
+        if (request.getContentTypes() != null && !request.getContentTypes().isEmpty()) {
+            contentTypesFormatted = request.getContentTypes().stream()
+                    .map(ContentType::getLabel)
+                    .collect(Collectors.joining("\n- "));
+            if (!contentTypesFormatted.isEmpty()) {
+                contentTypesFormatted = "- " + contentTypesFormatted;
+            }
         }
         replacements.put("{contentTypesFormatted}", contentTypesFormatted);
 
@@ -168,32 +168,8 @@ public class PromptTemplateService {
         return personalizedTemplate;
     }
 
-    /**
-     * Personaliza o template especificamente para o caso de conteúdo estoico
-     */
-    private String personalizeStoicTemplate(String template, StoicContentGenerationRequest request) {
-        // Personalizações básicas
-        String result = personalizeTemplate(template, request);
-
-        // Personalização específica para o filósofo
-        if (request.getPhilosopher() != null) {
-            String philosopherStyle = philosopherStyleService.getPhilosopherStyle(request.getPhilosopher());
-            result = result.replace("{philosopherStyle}", philosopherStyle);
-        } else if (request.getPhilosopherName() != null) {
-            String philosopherStyle = philosopherStyleService.getPhilosopherStyle(request.getPhilosopherName());
-            result = result.replace("{philosopherStyle}", philosopherStyle);
-        } else {
-            result = result.replace("{philosopherStyle}", "Estilo estoico genérico");
-        }
-
-        // Substituições adicionais específicas
-        result = result.replace("{philosopher}", nullSafe(request.getPhilosopherName()));
-
-        return result;
-    }
-
     private boolean shouldIncludeSection(ContentGenerationRequest request, ContentType contentType) {
-        return request.getContentTypes().contains(contentType);
+        return request.getContentTypes() != null && request.getContentTypes().contains(contentType);
     }
 
     private String nullSafe(String value) {
@@ -216,8 +192,172 @@ public class PromptTemplateService {
                         "- Seja entusiástico sobre os princípios e práticas estoicas\n" +
                         "- Inclua detalhes sobre exercícios e experiências estoicas\n" +
                         "- Considere diferentes níveis de compreensão e aplicação";
+            case PRAYER:
+                return "- Use linguagem inspiradora e edificante\n" +
+                        "- Mantenha uma abordagem respeitosa e reverente\n" +
+                        "- Inclua elementos apropriados para o contexto espiritual\n" +
+                        "- Considere o aspecto prático e aplicável da mensagem";
             default:
                 return "";
         }
+    }
+
+    /**
+     * Método de fallback para manter compatibilidade com código existente
+     */
+    public String loadPromptTemplate(ContentGenerationRequest request) {
+        return loadTemplateForRequest(request);
+    }
+
+    /**
+     * Método de fallback para manter compatibilidade com código existente
+     */
+    public String loadStoicPromptTemplate(StoicContentGenerationRequest request) {
+        return loadTemplateForRequest(request);
+    }
+
+    /**
+     * Carrega e personaliza o template para conteúdo de oração com parâmetros específicos
+     * @param religiousTradition Tradição religiosa (ex: "Cristã", "Católica")
+     * @param durationMinutes Duração em minutos
+     * @param timeOfDay Momento do dia (ex: "Manhã", "Noite")
+     * @param intentions Intenções específicas
+     * @param language Idioma (ex: "pt-BR")
+     * @return Template personalizado para geração de rotina de oração
+     */
+    public String loadPrayerPromptTemplate(
+            String religiousTradition,
+            Integer durationMinutes,
+            String timeOfDay,
+            String intentions,
+            String language) {
+
+        // Criar uma requisição temporária para manter compatibilidade
+        PrayerContentGenerationRequest request = new PrayerContentGenerationRequest();
+        request.setAgentType(AgentType.PRAYER);
+        request.setLanguage(language);
+
+        // Adicionar os parâmetros específicos como campos adicionais
+        // Nota: Estes campos devem existir na classe PrayerContentGenerationRequest
+        // Se não existirem, será necessário adicionar getters/setters ou usar um Map para dados adicionais
+
+        // Exemplo assumindo que os campos existem:
+        // request.setReligiousTradition(religiousTradition);
+        // request.setTargetDuration(durationMinutes);
+        // request.setTimeOfDay(timeOfDay);
+        // request.setIntentions(intentions);
+
+        // Se os campos não existirem, você pode usar um Map de contexto adicional:
+        Map<String, Object> additionalContext = new HashMap<>();
+        additionalContext.put("religiousTradition", religiousTradition);
+        additionalContext.put("durationMinutes", durationMinutes);
+        additionalContext.put("timeOfDay", timeOfDay);
+        additionalContext.put("intentions", intentions);
+
+        // Supondo que exista um método para definir contexto adicional
+        // request.setAdditionalContextMap(additionalContext);
+
+        // Ou converter para string e usar o campo existente
+        StringBuilder contextBuilder = new StringBuilder();
+        contextBuilder.append("Tradição religiosa: ").append(nullSafe(religiousTradition)).append("\n");
+        contextBuilder.append("Duração: ").append(durationMinutes != null ? durationMinutes + " minutos" : "").append("\n");
+        contextBuilder.append("Momento do dia: ").append(nullSafe(timeOfDay)).append("\n");
+        contextBuilder.append("Intenções: ").append(nullSafe(intentions));
+        request.setAdditionalContext(contextBuilder.toString());
+
+        // Usar o método existente para carregar o template
+        String template = loadTemplateForRequest(request);
+
+        // Personalizar mais o template se necessário para este caso específico
+        // Substituir placeholders específicos que podem não estar no método padrão
+        template = template.replace("{religiousTradition}", nullSafe(religiousTradition));
+        template = template.replace("{durationMinutes}", durationMinutes != null ? durationMinutes.toString() : "");
+        template = template.replace("{timeOfDay}", nullSafe(timeOfDay));
+        template = template.replace("{intentions}", nullSafe(intentions));
+
+        return template;
+    }
+
+    public String buildShortPrompt(String originalText, String originalTitle, String language) {
+        StringBuilder prompt = new StringBuilder();
+
+        prompt.append("# Solicitação para versão curta de conteúdo\n\n");
+        prompt.append("## Conteúdo original\n");
+        prompt.append("Título: ").append(originalTitle).append("\n\n");
+
+        // Limitar o tamanho do texto original se for muito grande
+        String limitedText = originalText;
+        if (originalText != null && originalText.length() > 2000) {
+            limitedText = originalText.substring(0, 2000) + "... [texto truncado]";
+        }
+        prompt.append(limitedText).append("\n\n");
+
+        prompt.append("## Instruções\n");
+        prompt.append("Crie uma versão resumida e mais curta do conteúdo acima, mantendo os pontos principais e a essência do texto original.\n");
+        prompt.append("A versão curta deve ser adequada para formatos como YouTube Shorts, Instagram ou TikTok.\n");
+        prompt.append("Mantenha um tom similar ao original, mas com frases mais diretas e concisas.\n");
+
+        // Instruções específicas por idioma
+        if ("pt-BR".equals(language)) {
+            prompt.append("\nEspecificações para Português do Brasil:\n");
+            prompt.append("- Use linguagem coloquial brasileira\n");
+            prompt.append("- Limite-se a aproximadamente 60-90 segundos de narração\n");
+            prompt.append("- Inclua uma chamada para ação ao final\n");
+        } else if (language != null && language.startsWith("en")) {
+            prompt.append("\nEnglish specifications:\n");
+            prompt.append("- Use conversational language\n");
+            prompt.append("- Limit to approximately 60-90 seconds of narration\n");
+            prompt.append("- Include a call to action at the end\n");
+        }
+
+        return prompt.toString();
+    }
+
+        public static String buildDescriptionPrompt(String title, String oracaoContent, String idioma) {
+        log.debug("Construindo prompt para descrição: titulo={}, tamanho da oração={} caracteres, idioma={}",
+                title, oracaoContent.length(), idioma);
+
+        StringBuilder prompt = new StringBuilder();
+
+        // Selecionar idioma para o prompt
+        if ("pt".equalsIgnoreCase(idioma) || "pt-BR".equalsIgnoreCase(idioma)) {
+            prompt.append("Crie uma descrição otimizada para YouTube e TikTok em português para o seguinte vídeo de oração:\n\n");
+        } else if ("en".equalsIgnoreCase(idioma)) {
+            prompt.append("Create an optimized description for YouTube and TikTok in English for the following prayer video:\n\n");
+        } else if ("es-MX".equalsIgnoreCase(idioma)) {
+            prompt.append("Crea una descripción optimizada para YouTube y TikTok en español latino/mexicano para el siguiente video de oración:\n\n");
+            prompt.append("Utiliza expresiones, palabras y giros típicos del español de México y Latinoamérica. Evita términos o expresiones propias del español de España.\n\n");
+        } else {
+            // Padrão: espanhol
+            prompt.append("Crea una descripción optimizada para YouTube y TikTok en español para el siguiente video de oración:\n\n");
+        }
+
+        prompt.append("Título: \"").append(title).append("\"\n\n");
+        prompt.append("Conteúdo da oração:\n").append(oracaoContent).append("\n\n");
+
+        prompt.append("Diretrizes para a descrição:\n");
+        prompt.append("1. Escreva entre 500-1000 caracteres\n");
+        prompt.append("2. Inclua 5-7 hashtags relevantes ao final\n");
+        prompt.append("3. Adicione 3-5 frases inspiradoras relacionadas ao tema\n");
+        prompt.append("4. Inclua um versículo bíblico principal\n");
+        prompt.append("5. Adicione um call-to-action para inscrição/compartilhamento\n");
+        prompt.append("6. Inclua 2-3 emojis estrategicamente colocados\n");
+        prompt.append("7. Mencione os benefícios de ouvir esta oração\n\n");
+
+        prompt.append("IMPORTANTE: A descrição deve estar no mesmo idioma da oração (");
+        if ("pt".equalsIgnoreCase(idioma) || "pt-BR".equalsIgnoreCase(idioma)) {
+            prompt.append("português");
+        } else if ("en".equalsIgnoreCase(idioma)) {
+            prompt.append("inglês");
+        } else if ("es-MX".equalsIgnoreCase(idioma)) {
+            prompt.append("español latino/mexicano");
+        } else {
+            prompt.append("español");
+        }
+        prompt.append(").\n\n");
+
+        prompt.append("Responda APENAS com o texto da descrição, sem comentários adicionais.");
+
+        return prompt.toString();
     }
 }

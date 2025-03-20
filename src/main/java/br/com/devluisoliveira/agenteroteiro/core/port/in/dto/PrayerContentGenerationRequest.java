@@ -55,6 +55,10 @@ public class PrayerContentGenerationRequest extends ContentGenerationRequest {
      */
     private Boolean includeInstructions = true;
 
+    public PrayerContentGenerationRequest() {
+
+    }
+
     /**
      * Duração preferida para a oração falada
      * Por padrão, orações são mais curtas que outros conteúdos

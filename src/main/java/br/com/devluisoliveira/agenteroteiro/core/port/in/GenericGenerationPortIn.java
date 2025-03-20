@@ -7,4 +7,5 @@ import br.com.devluisoliveira.agenteroteiro.core.port.out.response.dto.ContentGe
 public interface GenericGenerationPortIn {
     ContentGenerationResponse generateContent(User user, ContentGenerationRequest request);
 
+    ContentGenerationResponse checkGenerationStatus(String processId, User user);
 }

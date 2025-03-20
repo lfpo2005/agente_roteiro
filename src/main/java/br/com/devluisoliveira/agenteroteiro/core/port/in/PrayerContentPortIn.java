@@ -28,7 +28,6 @@ public interface PrayerContentPortIn {
      * Gera uma rotina de oração personalizada
      * @param user Usuário solicitante
      * @param religiousTradition Tradição religiosa
-     * @param denomination Denominação específica
      * @param durationMinutes Duração em minutos
      * @param timeOfDay Momento do dia
      * @param intentions Intenções específicas
@@ -38,7 +37,6 @@ public interface PrayerContentPortIn {
     ContentGenerationResponse generatePrayerRoutine(
             User user,
             String religiousTradition,
-            String denomination,
             Integer durationMinutes,
             String timeOfDay,
             String intentions,

@@ -2,6 +2,7 @@ package br.com.devluisoliveira.agenteroteiro.core.application.service;
 
 import br.com.devluisoliveira.agenteroteiro.core.application.mapper.GenericGeneraMapper;
 import br.com.devluisoliveira.agenteroteiro.core.application.mapper.StoicContentMapper;
+import br.com.devluisoliveira.agenteroteiro.core.application.service.agentStyle.PhilosopherStyleService;
 import br.com.devluisoliveira.agenteroteiro.core.application.service.enums.PhilosopherType;
 import br.com.devluisoliveira.agenteroteiro.core.domain.entity.ContentGeneration;
 import br.com.devluisoliveira.agenteroteiro.core.domain.entity.User;
