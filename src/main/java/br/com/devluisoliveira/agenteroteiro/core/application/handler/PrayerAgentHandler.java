@@ -31,8 +31,6 @@ import java.util.stream.Collectors;
 public class PrayerAgentHandler implements AgentHandler {
 
     private final PrayerStyleService prayerStyleService;
-    private final OpenAIService openAIService;
-    private final PromptTemplateService promptTemplateService;
 
     private static final String PROMPT_TEMPLATE_PATH = "prompts/prompt_prayer_specialist.txt";
 
@@ -44,7 +42,7 @@ public class PrayerAgentHandler implements AgentHandler {
     @Override
     public String preparePrompt(Map<String, Object> request) {
         try {
-            // Carregar o template base
+            log.info("[PrayerAgentHandler.preparePrompt] - Preparando prompt de oração");
             String baseTemplate = loadTemplateFile();
 
             // Personalizar o template com os dados da requisição
@@ -117,6 +115,7 @@ public class PrayerAgentHandler implements AgentHandler {
     }
 
     private String customizeTemplate(String template, Map<String, Object> request) {
+        log.info("[PrayerAgentHandler.customizeTemplate] - Personalizando template de oração");
         // Clone o template para evitar alterações no original
         String customizedTemplate = template;
 
@@ -153,7 +152,10 @@ public class PrayerAgentHandler implements AgentHandler {
         customizedTemplate = customizedTemplate.replace("{prayerStyleCharacteristics}", prayerStyleChars);
 
         // Substituir contexto adicional
-        customizedTemplate = customizedTemplate.replace("{additionalContext}", additionalContext);
+        if (additionalContext != null) {
+            customizedTemplate = customizedTemplate.replace("{additionalContext}", additionalContext);
+        }
+
 
         // Formatar tipos de conteúdo solicitados
         List<ContentType> contentTypes = getContentTypes(request);

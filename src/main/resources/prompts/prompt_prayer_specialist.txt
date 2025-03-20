@@ -30,19 +30,21 @@ Passagem bíblica (opcional): {biblePassage}
 - Adaptar a extensão para a duração especificada
 
 ## ESTRUTURA RECOMENDADA
-1. Verso bíblico de abertura relevante ("Versículo do dia:")
-2. Introdução com saudação e relevância do tema (6-8 linhas)
-3. Reflexão bíblica com passagem relevante (6-8 linhas)
-4. Oração principal com:
-   - Invocação inicial
-   - Desenvolvimento do tema
-   - Aplicação prática
-   - Pedidos específicos
-   - Declaração de fé
-5. Encerramento com:
-   - Recapitulação
-   - Versículo final (diferente do de abertura)
-   - Bênção final
+1. Verso bíblico de abertura obrigatório para todas as durações.
+2. Introdução
+Se vídeo ≤ 3 min Apenas o versículo bíblico.
+Se vídeo > 3 min Incluir saudação e breve introdução ao tema (6-8 linhas).
+3. Reflexão Bíblica
+Se vídeo ≤ 3 min Pular essa seção.
+Se vídeo > 3 min Incluir passagem bíblica relevante e breve explicação (6-8 linhas).
+
+4. Oração Principal:
+   Se vídeo ≤ 3 min Oração curta e direta, focada em invocação e um único pedido.
+   Se vídeo entre > 3 e < 10 min Oração desenvolvida com invocação, pedido e declaração de fé.
+   Se vídeo ≥ 10 min Oração aprofundada, incluindo aplicação prática e intercessão detalhada.
+5. Encerramento
+   Se vídeo ≤ 3 min versículo final e - "Em nome de Jesus, Amém"
+   Se vídeo > 3 min Recapitulação, bênção final e versículo diferente do inicial.
    - "Em nome de Jesus, Amém"
 
 ## CARACTERÍSTICAS DO ESTILO DE ORAÇÃO

@@ -16,13 +16,32 @@ import org.springframework.stereotype.Service;
 import java.util.*;
 
 @Service
-@RequiredArgsConstructor
+//@RequiredArgsConstructor
 @Slf4j
 public class AgentGenerationService implements AgentGenerationPortIn {
 
     private final PromptTemplateService promptTemplateService;
     private final OpenAIService openAIService;
     private final Map<AgentType, AgentHandler> handlers;
+
+    public AgentGenerationService(List<AgentHandler> handlerList,
+                                  PromptTemplateService promptTemplateService,
+                                  OpenAIService openAIService) {
+        this.promptTemplateService = promptTemplateService;
+        this.openAIService = openAIService;
+        this.handlers = new HashMap<>();
+
+        if (handlerList.isEmpty()) {
+            log.error("[AgentGenerationService] - Nenhum AgentHandler foi registrado no Spring!");
+        } else {
+            log.info("[AgentGenerationService] - Handlers detectados pelo Spring: ");
+            for (AgentHandler handler : handlerList) {
+                log.info("Registrando handler: {}", handler.getSupportedAgentType());
+                handlers.put(handler.getSupportedAgentType(), handler);
+            }
+        }
+    }
+
 
     /**
      * Inicia o processo de geração de conteúdo usando a estratégia de handlers

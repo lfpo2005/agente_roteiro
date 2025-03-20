@@ -1,4 +1,4 @@
-package br.com.devluisoliveira.agenteroteiro.core.application.handler.utils;
+package br.com.devluisoliveira.agenteroteiro.core.application.utils;
 
 import br.com.devluisoliveira.agenteroteiro.core.application.service.enums.ContentType;
 import br.com.devluisoliveira.agenteroteiro.core.application.service.enums.DurationType;

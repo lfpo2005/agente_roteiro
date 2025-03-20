@@ -169,8 +169,8 @@ public class PrayerContentService implements PrayerContentPortIn {
             throw new IllegalArgumentException("O tema da oração é obrigatório");
         }
 
-        if (request.getContentTypes() == null || request.getContentTypes().isEmpty()) {
-            throw new IllegalArgumentException("Pelo menos um tipo de conteúdo deve ser selecionado");
+        if (request.getTitle() == null || request.getTitle().trim().isEmpty()) {
+            throw new IllegalArgumentException("O título da oração é obrigatório");
         }
 
         log.debug("[PrayerContentService.validateRequest] - Requisição válida");
@@ -240,7 +240,7 @@ public class PrayerContentService implements PrayerContentPortIn {
         // Adicionar hashtags se necessário
         if (response.getTags() == null || response.getTags().isEmpty()) {
             String tags = generatePrayerTags(request.getTheme(), request.getPrayerType());
-            response.setTags(tags);
+            response.setTags(tags); //todo: corrigir tags tem que vim da api
         }
 
         return response;

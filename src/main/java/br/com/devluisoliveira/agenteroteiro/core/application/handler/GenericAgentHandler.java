@@ -1,6 +1,6 @@
 package br.com.devluisoliveira.agenteroteiro.core.application.handler;
 
-import br.com.devluisoliveira.agenteroteiro.core.application.handler.utils.ContentGenerationUtils;
+import br.com.devluisoliveira.agenteroteiro.core.application.utils.ContentGenerationUtils;
 import br.com.devluisoliveira.agenteroteiro.core.application.service.OpenAIService;
 import br.com.devluisoliveira.agenteroteiro.core.application.service.PromptTemplateService;
 import br.com.devluisoliveira.agenteroteiro.core.application.service.enums.AgentType;
@@ -20,9 +20,6 @@ import java.util.regex.Pattern;
 @RequiredArgsConstructor
 @Slf4j
 public class GenericAgentHandler implements AgentHandler {
-
-    private final PromptTemplateService promptTemplateService;
-    private final OpenAIService openAIService;
 
     @Override
     public AgentType getSupportedAgentType() {

@@ -92,7 +92,7 @@ management:
 roteiro:
   auth:
     jwtSecret: ktEz5S/6aQXlu2g41GxBWFSKTFEUS7IO2tC81Vga8LLarxbgNGeERs1vWoYGNefrYlxHtKCeD/3KWNLcRKYZiw==
-    jwtExpirationMs: 144000
+    jwtExpirationMs: 14400000
 
 minio:
   url: http://localhost:9000

@@ -6,7 +6,10 @@ import br.com.devluisoliveira.agenteroteiro.core.port.out.response.dto.ContentGe
 import java.util.Map;
 
 public interface AgentHandler {
+
     AgentType getSupportedAgentType();
+
     String preparePrompt(Map<String, Object> request);
+
     ContentGenerationResponse processResponse(String aiResponse, Map<String, Object> request);
 }
