@@ -28,7 +28,7 @@ public class ContentGenerationRequest {
     private String videoTopic;
     private String targetAudience;
     private String toneStyle;
-    private DurationType durationType = DurationType.MINUTES_10;
+    private DurationType durationType;
 
     // Parâmetros opcionais para personalização
     private String additionalContext;
@@ -41,9 +41,32 @@ public class ContentGenerationRequest {
     private String voiceType; // Id da voz ou tipo (masculina/feminina...)
     private Boolean generateShortVersion = false;
 
+    /**
+     * Retorna a duração alvo em minutos
+     * Se não estiver definido, usa MINUTES_5 como padrão
+     */
+    public DurationType getDurationType() {
+        return durationType != null ? durationType : DurationType.MINUTES_5;
+    }
 
-    public Integer getTargetDuration() {
-        return durationType != null ? durationType.getDurationInMinutes() : 10;
+    /**
+     * Método para determinar se deve gerar versão curta
+     * - Não gera para vídeos já curtos (30s, 60s, 3min)
+     * - Para vídeos mais longos, só gera se a flag for true
+     */
+    public boolean shouldGenerateShortVersion() {
+        // Obter o tipo de duração atual
+        DurationType duration = getDurationType();
+
+        // Vídeos já considerados curtos - não precisa de versão short
+        if (duration == DurationType.SECONDS_30 ||
+                duration == DurationType.SECONDS_60 ||
+                duration == DurationType.MINUTES_3) {
+            return false;
+        }
+
+        // Para vídeos mais longos, gerar short apenas se a flag estiver habilitada
+        return Boolean.TRUE.equals(getGenerateShortVersion());
     }
 
     /**
@@ -61,7 +84,7 @@ public class ContentGenerationRequest {
      * @return Número estimado de palavras
      */
     public int getEstimatedWordCount() {
-        return durationType != null ? durationType.getEstimatedWordCount() : 1300; // 10 min default
+        return getDurationType().getEstimatedWordCount();
     }
 
     /**
@@ -69,7 +92,13 @@ public class ContentGenerationRequest {
      * @return Número estimado de caracteres
      */
     public int getEstimatedCharacterCount() {
-        return durationType != null ? durationType.getEstimatedCharacterCount() : 7500; // 10 min default
+        return getDurationType().getEstimatedCharacterCount();
     }
 
+    /**
+     * Retorna a duração alvo em minutos
+     */
+    public Integer getTargetDuration() {
+        return getDurationType().getDurationInMinutes();
+    }
 }

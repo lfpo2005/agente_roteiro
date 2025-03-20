@@ -1,5 +1,6 @@
 package br.com.devluisoliveira.agenteroteiro.core.application.handler;
 
+import br.com.devluisoliveira.agenteroteiro.core.application.handler.utils.ContentGenerationUtils;
 import br.com.devluisoliveira.agenteroteiro.core.application.service.OpenAIService;
 import br.com.devluisoliveira.agenteroteiro.core.application.service.PromptTemplateService;
 import br.com.devluisoliveira.agenteroteiro.core.application.service.enums.AgentType;
@@ -173,8 +174,8 @@ public class GenericAgentHandler implements AgentHandler {
             // Extrair título
             String title = getStringValue(request, "title");
 
-            // Mapear seções da resposta
-            Map<ContentType, String> contentMap = extractContentSections(aiResponse);
+            // Mapear seções da resposta usando o método que inclui o request
+            Map<ContentType, String> contentMap = extractContentSections(aiResponse, request);
 
             // Construir a resposta
             return ContentGenerationResponse.builder()
@@ -240,6 +241,17 @@ public class GenericAgentHandler implements AgentHandler {
 
     @SuppressWarnings("unchecked")
     private boolean hasSection(Map<String, Object> request, ContentType contentType) {
+        if (contentType == ContentType.SHORTS_IDEA) {
+            // Para SHORTS_IDEA, verificar se deve gerar com base na duração e flag
+            return ContentGenerationUtils.shouldIncludeShortVersion(request) &&
+                    hasContentType(request, contentType);
+        }
+        // Para outros tipos de conteúdo, usar a verificação padrão
+        return hasContentType(request, contentType);
+    }
+
+    @SuppressWarnings("unchecked")
+    private boolean hasContentType(Map<String, Object> request, ContentType contentType) {
         if (request.containsKey("contentTypes")) {
             Object contentTypesObj = request.get("contentTypes");
             if (contentTypesObj instanceof Iterable) {
@@ -253,9 +265,7 @@ public class GenericAgentHandler implements AgentHandler {
         return false;
     }
 
-    private Map<ContentType, String> extractContentSections(String aiResponse) {
-        Map<ContentType, String> contentMap = new HashMap<>();
-
+    private Map<ContentType, String> extractContentSections(String aiResponse, Map<String, Object> request) {
         // Mapeamento de cabeçalhos de seção para tipos de conteúdo
         Map<String, ContentType> sectionToType = new HashMap<>();
         sectionToType.put("TÍTULO DO VÍDEO", ContentType.TITLE);
@@ -266,25 +276,8 @@ public class GenericAgentHandler implements AgentHandler {
         sectionToType.put("SCRIPT PARA ÁUDIO", ContentType.AUDIO_SCRIPT);
         sectionToType.put("VERSÃO CURTA", ContentType.SHORTS_IDEA);
 
-        // Regex para encontrar seções no formato "### NOME DA SEÇÃO"
-        Pattern sectionPattern = Pattern.compile("###\\s+([^\\n]+)([\\s\\S]*?)(?=###|$)");
-        Matcher matcher = sectionPattern.matcher(aiResponse);
-
-        // Extrair cada seção
-        while (matcher.find()) {
-            String sectionTitle = matcher.group(1).trim();
-            String sectionContent = matcher.group(2).trim();
-
-            // Mapear para o tipo de conteúdo correspondente
-            for (Map.Entry<String, ContentType> entry : sectionToType.entrySet()) {
-                if (sectionTitle.contains(entry.getKey())) {
-                    contentMap.put(entry.getValue(), sectionContent);
-                    break;
-                }
-            }
-        }
-
-        return contentMap;
+        // Usar o utilitário para extrair as seções com base na duração e flag
+        return ContentGenerationUtils.extractContentSections(aiResponse, request, sectionToType);
     }
 
     private String extractTitle(String aiResponse) {
