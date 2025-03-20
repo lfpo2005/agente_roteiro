@@ -36,12 +36,6 @@ public class PrayerContentService implements PrayerContentPortIn {
     private final PromptTemplateService promptTemplateService;
     private final OpenAIService openAIService;
 
-    /**
-     * Gera conteúdo de oração baseado na requisição
-     * @param user Usuário que solicitou
-     * @param request Requisição com detalhes da oração
-     * @return Resposta com o conteúdo gerado
-     */
     public ContentGenerationResponse generateContent(User user, PrayerContentGenerationRequest request) {
         log.info("[PrayerContentService.generateContent] - Iniciando geração de conteúdo de oração para usuário: {}, tema: {}, estilo: {}",
                 user.getUsername(), request.getTheme(), request.getPrayerStyle());

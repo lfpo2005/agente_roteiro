@@ -45,12 +45,14 @@ public class PrayerContentController {
             @RequestBody @Valid PrayerContentGenerationRequest request) {
         User user = securityUtil.getLoggedInUser();
 
+        log.info("Recebida solicitação para geração de oração do usuário: {}, tema: {}, estilo: {}",
+                user.getUsername(), request.getTheme(), request.getPrayerStyle());
+
+
         if (request.getProcessId() == null || request.getProcessId().trim().isEmpty()) {
             request.setProcessId(UUID.randomUUID().toString());
         }
 
-        log.info("Recebida solicitação para geração de oração do usuário: {}, tema: {}, estilo: {}",
-                user.getUsername(), request.getTheme(), request.getPrayerStyle());
 
         ContentGenerationResponse response = prayerContentPortIn.generateContent(user, request);
 

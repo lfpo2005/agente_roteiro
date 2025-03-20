@@ -3,44 +3,26 @@ package br.com.devluisoliveira.agenteroteiro.core.application.service;
 import br.com.devluisoliveira.agenteroteiro.core.application.handler.AgentHandler;
 import br.com.devluisoliveira.agenteroteiro.core.application.service.enums.AgentType;
 import br.com.devluisoliveira.agenteroteiro.core.application.service.enums.ContentType;
+import br.com.devluisoliveira.agenteroteiro.core.domain.entity.User;
+import br.com.devluisoliveira.agenteroteiro.core.port.in.AgentGenerationPortIn;
 import br.com.devluisoliveira.agenteroteiro.core.port.in.dto.ContentGenerationRequest;
+import br.com.devluisoliveira.agenteroteiro.core.port.out.response.GenerationResponseDto;
 import br.com.devluisoliveira.agenteroteiro.core.port.out.response.dto.ContentGenerationResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class AgentGenerationService {
+public class AgentGenerationService implements AgentGenerationPortIn {
 
-    // Injetar outros serviços necessários
     private final PromptTemplateService promptTemplateService;
     private final OpenAIService openAIService;
-
-    // Opcionalmente, você pode adicionar esses serviços quando implementá-los
-    // private final ElevenLabsService audioGenerationService;
-    // private final AnthropicService anthropicService;
-    // private final MistralService mistralService;
-
-    // Registro de handlers para diferentes tipos de agentes
     private final Map<AgentType, AgentHandler> handlers;
-
-    // Construtor para injetar automaticamente todos os handlers
-    public AgentGenerationService(List<AgentHandler> handlerList,
-                                  PromptTemplateService promptTemplateService,
-                                  OpenAIService openAIService /* outros serviços */) {
-        this.promptTemplateService = promptTemplateService;
-        this.openAIService = openAIService;
-        this.handlers = new HashMap<>();
-        handlerList.forEach(handler ->
-                handlers.put(handler.getSupportedAgentType(), handler));
-    }
 
     /**
      * Inicia o processo de geração de conteúdo usando a estratégia de handlers
@@ -105,7 +87,7 @@ public class AgentGenerationService {
      * Gera conteúdo chamando o provedor de IA apropriado
      */
     private String generateContent(String prompt, Map<String, Object> requestMap) {
-        log.info("[AgentGenerationService.generateContent] - Gerando conteúdo com prompt de {} caracteres", prompt.length());
+        log.info("[AgentGenerationService.generateContent] - Gerando conteúdo com prompt de {} caracteres", Optional.of(prompt.length()));
 
         try {
             // Chama o provedor principal de IA (OpenAI)
@@ -254,5 +236,43 @@ public class AgentGenerationService {
                 .status("ERROR")
                 .message(errorMessage)
                 .build();
+    }
+
+    @Override
+    public GenerationResponseDto initializeAgentGeneric(User user, ContentGenerationRequest request) {
+        log.info("[AgentGenerationService.initializeAgentGeneric] - Iniciando processo de geração com ID: {}",
+                request.getProcessId());
+
+        try {
+            // Criar a resposta de geração
+            GenerationResponseDto responseDto = new GenerationResponseDto();
+            responseDto.setProcessId(request.getProcessId());
+            responseDto.setMessage("Processo de geração iniciado com sucesso");
+
+            // Iniciar o processo de geração assíncrono
+            // Aqui você pode implementar a lógica para chamar o serviço de geração
+            // de conteúdo de forma assíncrona, usando uma thread separada ou um sistema
+            // de mensageria como RabbitMQ ou Kafka
+
+            // Para uma implementação inicial simples, vamos apenas retornar a resposta
+            return responseDto;
+
+            // Em uma implementação mais completa, você pode fazer algo como:
+            /*
+            CompletableFuture.runAsync(() -> {
+                try {
+                    genericGenerationService.generateContent(user, request);
+                } catch (Exception e) {
+                    log.error("Erro na geração de conteúdo: {}", e.getMessage(), e);
+                }
+            });
+            */
+        } catch (Exception e) {
+            log.error("[AgentGenerationService.initializeAgentGeneric] - Erro: {}", e.getMessage(), e);
+            GenerationResponseDto errorResponse = new GenerationResponseDto();
+            errorResponse.setProcessId(request.getProcessId());
+            errorResponse.setMessage("Erro ao iniciar processo: " + e.getMessage());
+            return errorResponse;
+        }
     }
 }

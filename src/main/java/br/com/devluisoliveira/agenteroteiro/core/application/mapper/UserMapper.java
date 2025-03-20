@@ -23,6 +23,7 @@ public class UserMapper {
                 .username(userRequestDto.getUsername())
                 .email(userRequestDto.getEmail())
                 .active(true)
+                .phoneNumber(userRequestDto.getPhoneNumber())
                 .createdAt(LocalDateTime.now(ZoneId.of("UTC")))
                 .roles(new HashSet<>())
                 .build();

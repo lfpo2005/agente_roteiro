@@ -17,15 +17,15 @@ public interface UserRepository extends JpaRepository<User, UUID> {
     boolean existsByEmail(String email);
     boolean existsByCpf(String cpf);
 
-    @EntityGraph(attributePaths = {"roles", "addresses", "phones"}, type = EntityGraph.EntityGraphType.FETCH)
+    @EntityGraph(attributePaths = {"roles"}, type = EntityGraph.EntityGraphType.FETCH)
     Optional<User> findByUsername(String username);
 
-    @EntityGraph(attributePaths = {"roles", "addresses", "phones"}, type = EntityGraph.EntityGraphType.FETCH)
+    @EntityGraph(attributePaths = {"roles"}, type = EntityGraph.EntityGraphType.FETCH)
     Optional<User> findById(UUID userId);
 
-    @EntityGraph(attributePaths = {"roles", "addresses", "phones"}, type = EntityGraph.EntityGraphType.FETCH)
+    @EntityGraph(attributePaths = {"roles"}, type = EntityGraph.EntityGraphType.FETCH)
     Page<User> findAll(Pageable pageable);
 
-    @EntityGraph(attributePaths = {"roles", "addresses", "phones"}, type = EntityGraph.EntityGraphType.FETCH)
+    @EntityGraph(attributePaths = {"roles"}, type = EntityGraph.EntityGraphType.FETCH)
     Optional<Object> findByEmail(String email);
 }
