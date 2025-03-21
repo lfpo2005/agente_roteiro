@@ -74,16 +74,7 @@ public class ContentGenerationUtils {
         return DurationType.MINUTES_5;
     }
 
-    /**
-     * Extrai as seções de conteúdo de uma resposta de IA
-     * Inclui apenas as seções necessárias de acordo com a duração
-     *
-     * @param aiResponse Resposta da IA
-     * @param request Map com os parâmetros da requisição
-     * @param sectionToTypeMap Mapeamento de nomes de seção para ContentType
-     * @return Map com as seções extraídas
-     */
-    public static Map<ContentType, String> extractContentSections(
+       public static Map<ContentType, String> extractContentSections(
             String aiResponse,
             Map<String, Object> request,
             Map<String, ContentType> sectionToTypeMap) {

@@ -3,10 +3,8 @@ package br.com.devluisoliveira.agenteroteiro.core.application.handler;
 import br.com.devluisoliveira.agenteroteiro.core.application.service.OpenAIService;
 import br.com.devluisoliveira.agenteroteiro.core.application.service.agentStyle.PrayerStyleService;
 import br.com.devluisoliveira.agenteroteiro.core.application.service.PromptTemplateService;
-import br.com.devluisoliveira.agenteroteiro.core.application.service.enums.AgentType;
-import br.com.devluisoliveira.agenteroteiro.core.application.service.enums.ContentType;
-import br.com.devluisoliveira.agenteroteiro.core.application.service.enums.PrayerStyle;
-import br.com.devluisoliveira.agenteroteiro.core.application.service.enums.PrayerType;
+import br.com.devluisoliveira.agenteroteiro.core.application.service.enums.*;
+import br.com.devluisoliveira.agenteroteiro.core.port.in.dto.PrayerContentGenerationRequest;
 import br.com.devluisoliveira.agenteroteiro.core.port.out.response.dto.ContentGenerationResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,6 +22,8 @@ import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+
+import static br.com.devluisoliveira.agenteroteiro.core.application.service.enums.DurationType.*;
 
 @Component
 @RequiredArgsConstructor
@@ -119,20 +119,29 @@ public class PrayerAgentHandler implements AgentHandler {
 
         String customizedTemplate = template;
 
-        // Obter valores básicos
+
         String processId = getStringValue(request, "processId");
         String title = getStringValue(request, "title");
         String theme = getStringValue(request, "theme");
         String notes = getStringValue(request, "notes");
         String bibleVersion = getStringValue(request, "bibleVersion");
-        String targetDuration = request.containsKey("targetDuration") ? String.valueOf(request.get("targetDuration")) : "5";
         String language = getStringValue(request, "language", "pt_BR");
         boolean isShort = request.containsKey("shortVideo") ? (Boolean) request.get("shortVideo") : false;
         boolean isAudio = request.containsKey("audioScript") ? (Boolean) request.get("audioScript") : false;
         String targetAudience = getStringValue(request, "targetAudience");
         String personalizationName = getStringValue(request, "personalizationName");
 
+        String targetDurationStr = getStringValue(request, "targetDuration");
+        int targetDurationMinutes = 0;
 
+        if (targetDurationStr != null && !targetDurationStr.isEmpty()) {
+            try {
+                int targetDurationSeconds = Integer.parseInt(targetDurationStr);
+                targetDurationMinutes = targetDurationSeconds / 60;
+            } catch (NumberFormatException e) {
+                log.error("Erro ao converter targetDurationStr para inteiro: {}", e.getMessage());
+            }
+        }
 
         // Obter valores específicos da oração
         PrayerType prayerType = getPrayerType(request);
@@ -141,27 +150,25 @@ public class PrayerAgentHandler implements AgentHandler {
         String additionalContext = getStringValue(request, "additionalContext");
 
         // Substituir os placeholders básicos
-       customizedTemplate = customizedTemplate.replace("{processId}", nullSafe(processId))
-                                .replace("{title}", nullSafe(title))
-                                .replace("{theme}", nullSafe(theme))
-                                .replace("{notes}", nullSafe(notes))
-                                .replace("{bibleVersion}", nullSafe(bibleVersion).isEmpty() ? "NVI" : bibleVersion)
-                                .replace("{prayerType}", prayerType != null ? prayerType.getDisplayName() : "")
-                                .replace("{prayerStyle}", prayerStyle != null ? prayerStyle.getDisplayName() : "")
-                                .replace("{targetDuration}", nullSafe(targetDuration))
-                                .replace("{language}", nullSafe(language))
-                                .replace("{biblePassage}", nullSafe(biblePassage).isEmpty() ? "o que fizer sentido em relação ao tema" : biblePassage)
-                                .replace("{shortVideo}", nullSafe(isShort ? "Sim" : "Não"))
-                                .replace("{audioScript}", nullSafe(isAudio ? "Sim" : "Não"))
-                                .replace("{targetAudience}", nullSafe(targetAudience).isEmpty() ? "Cristãos" : targetAudience)
-                                .replace("{personalizationName}", nullSafe(personalizationName));
-
+        customizedTemplate = customizedTemplate.replace("{processId}", nullSafe(processId))
+                .replace("{title}", nullSafe(title))
+                .replace("{theme}", nullSafe(theme))
+                .replace("{notes}", nullSafe(notes))
+                .replace("{bibleVersion}", nullSafe(bibleVersion).isEmpty() ? "NVI" : bibleVersion)
+                .replace("{prayerType}", prayerType != null ? prayerType.getDisplayName() : "")
+                .replace("{prayerStyle}", prayerStyle != null ? prayerStyle.getDisplayName() : "")
+                .replace("{targetDuration}", nullSafe(String.valueOf(targetDurationMinutes)))
+                .replace("{language}", nullSafe(language))
+                .replace("{biblePassage}", nullSafe(biblePassage).isEmpty() ? "o que fizer sentido em relação ao tema" : biblePassage)
+                .replace("{shortVideo}", isShort ? "Sim" : "Não")
+                .replace("{audioScript}", isAudio ? "Sim" : "Não")
+                .replace("{targetAudience}", (targetAudience == null || targetAudience.isEmpty()) ? "Cristãos" : targetAudience)
+                .replace("{personalizationName}", nullSafe(personalizationName));
 
         // Obter e substituir as características do estilo e tipo de oração
         String prayerStyleChars = request.containsKey("prayerStyleCharacteristics")
                 ? (String) request.get("prayerStyleCharacteristics")
                 : prayerStyleService.getCombinedPrayerCharacteristics(prayerStyle, prayerType);
-
         customizedTemplate = customizedTemplate.replace("{prayerStyleCharacteristics}", prayerStyleChars);
 
         // Substituir contexto adicional
@@ -172,7 +179,6 @@ public class PrayerAgentHandler implements AgentHandler {
         if (contentTypes.isEmpty()) {
             contentTypes = List.of(ContentType.TITLE, ContentType.DESCRIPTION, ContentType.SCRIPT, ContentType.TAGS);
         }
-
         String contentTypesFormatted = contentTypes.stream()
                 .map(ContentType::getLabel)
                 .collect(Collectors.joining("\n- "));
@@ -183,36 +189,106 @@ public class PrayerAgentHandler implements AgentHandler {
 
         // Configurar seções do formato de saída
         StringBuilder formatOutput = new StringBuilder();
-
         if (shouldIncludeSection(contentTypes, ContentType.TITLE)) {
-            formatOutput.append("### TÍTULO DA ORAÇÃO\n\n");
+            formatOutput.append("### Título do Vídeo\n\n");
         }
         if (shouldIncludeSection(contentTypes, ContentType.DESCRIPTION)) {
-            formatOutput.append("### DESCRIÇÃO\n[Descrição otimizada para plataformas de vídeo com 500-1000 caracteres]\n\n");
+            formatOutput.append("### Descrição do Vídeo\n[Descrição otimizada para plataformas de vídeo com 500-1000 caracteres]\n\n");
         }
         if (shouldIncludeSection(contentTypes, ContentType.TAGS)) {
-            formatOutput.append("### TAGS\n[5-10 hashtags relevantes para a oração]\n\n");
+            formatOutput.append("### Tags\n[5-10 hashtags relevantes para a oração]\n\n");
         }
         if (shouldIncludeSection(contentTypes, ContentType.SCRIPT)) {
-            formatOutput.append("### ORAÇÃO COMPLETA\n[Texto completo da oração seguindo a estrutura indicada]\n\n");
+            formatOutput.append("### Roteiro\n[Texto completo da oração seguindo a estrutura indicada]\n\n");
         }
         if (shouldIncludeSection(contentTypes, ContentType.THUMBNAIL_IDEA)) {
-            formatOutput.append("### IDEIA PARA THUMBNAIL\n[3 ideias para thumbnail com elementos visuais e texto]\n\n");
+            formatOutput.append("### Imagem em destaque (Thumbnail)\n[3 ideias para thumbnail com elementos visuais e texto]\n\n");
         }
         if (shouldIncludeSection(contentTypes, ContentType.AUDIO_SCRIPT)) {
-            formatOutput.append("### SCRIPT PARA ÁUDIO\n[Versão da oração otimizada para narração em áudio]\n\n");
+            formatOutput.append("### Script para Áudio\n[Versão da oração otimizada para narração em áudio]\n\n");
         }
         if (shouldIncludeSection(contentTypes, ContentType.SHORTS_IDEA)) {
-            formatOutput.append("### VERSÃO CURTA\n[Versão curta da oração com 300-500 caracteres para vídeos breves]\n\n");
+            formatOutput.append("### Versão Curta\n[Versão curta da oração com 300-500 caracteres para vídeos breves]\n\n");
         }
-
         customizedTemplate = customizedTemplate.replace("{formatOutput}", formatOutput.toString());
 
-        // Log para depuração
-        log.debug("[PrayerAgentHandler.customizeTemplate] - Prompt final com {} caracteres", customizedTemplate.length());
+        String durationInstructions = "";
+        String durationTypeString = targetDurationStr;
 
+
+        DurationType durationType = null;
+        try {
+            durationType = DurationType.valueOf(durationTypeString);
+            log.info("[PrayerAgentHandler.customizeTemplate] - Duração extraída do enum: {}", durationType);
+        } catch (IllegalArgumentException e) {
+            try {
+                int seconds = Integer.parseInt(durationTypeString);
+                log.info("[PrayerAgentHandler.customizeTemplate] - Tentando encontrar enum por segundos: {}", seconds);
+
+                for (DurationType type : DurationType.values()) {
+                    if (type.getDurationInSeconds() == seconds) {
+                        durationType = type;
+                        break;
+                    }
+                }
+
+                if (durationType == null) {
+                    log.warn("[PrayerAgentHandler.customizeTemplate] - Não foi encontrado enum para {} segundos. Usando valor padrão.", seconds);
+                    // Valor padrão se não encontrar correspondência
+                    durationType = DurationType.MINUTES_5;
+                }
+            } catch (NumberFormatException numberEx) {
+                log.warn("[PrayerAgentHandler.customizeTemplate] - Valor '{}' não é um nome de enum válido nem um número. Usando valor padrão.", durationTypeString);
+                // Se nem for um número, use o valor padrão
+                durationType = DurationType.MINUTES_5;
+            }
+        }
+
+        log.info("[PrayerAgentHandler.customizeTemplate] - Duração extraída: {}", durationType);
+        if (durationType != null) {
+            switch (durationType) {
+                case SECONDS_30:
+                    durationInstructions = "Tamanho total: 300-500 caracteres (30 segundos)";
+                    break;
+                case SECONDS_60:
+                    durationInstructions = "Tamanho total: 500-800 caracteres (1 minuto)";
+                    break;
+                case MINUTES_3:
+                    durationInstructions = "Tamanho total: 800-1.200 caracteres (3 minutos)";
+                    break;
+                case MINUTES_5:
+                    durationInstructions = "Tamanho total: 1.800-2.200 caracteres (5 minutos)";
+                    break;
+                case MINUTES_10:
+                    durationInstructions = "Tamanho total: 3.500-4.000 caracteres (10 minutos)";
+                    break;
+                case MINUTES_15:
+                    durationInstructions = "Tamanho total: 3.500-4.000 caracteres (15 minutos)";
+                    break;
+                case MINUTES_20:
+                    durationInstructions = "Tamanho total: 6.000-7.000 caracteres (20 minutos)";
+                    break;
+                case MINUTES_25:
+                    durationInstructions = "Tamanho total: 8.000-9.000 caracteres (25 minutos)";
+                    break;
+                case MINUTES_30:
+                    durationInstructions = "Tamanho total: 9.000-10.000 caracteres (30 minutos)";
+                    break;
+                default:
+                    durationInstructions = "Tamanho total: 5.000-6.000 caracteres (15-30 minutos)";
+                    break;
+            }
+        } else {
+            durationInstructions = "Tamanho total: 1.800-2.200 caracteres (5 minutos)";
+        }
+        // Você pode optar por inserir essas instruções em um placeholder específico no template,
+        // ou simplesmente anexá-las ao final.
+        customizedTemplate += "\n\n" + durationInstructions;
+
+        log.debug("[PrayerAgentHandler.customizeTemplate] - Prompt final com {} caracteres", customizedTemplate.length());
         return customizedTemplate;
     }
+
 
 
     private PrayerType getPrayerType(Map<String, Object> request) {

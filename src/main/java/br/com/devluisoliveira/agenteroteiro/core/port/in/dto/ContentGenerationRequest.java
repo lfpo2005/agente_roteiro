@@ -41,19 +41,7 @@ public class ContentGenerationRequest {
     private String voiceType; // Id da voz ou tipo (masculina/feminina...)
     private Boolean generateShortVersion = false;
 
-    /**
-     * Retorna a duração alvo em minutos
-     * Se não estiver definido, usa MINUTES_5 como padrão
-     */
-    public DurationType getDurationType() {
-        return durationType != null ? durationType : DurationType.MINUTES_5;
-    }
 
-    /**
-     * Método para determinar se deve gerar versão curta
-     * - Não gera para vídeos já curtos (30s, 60s, 3min)
-     * - Para vídeos mais longos, só gera se a flag for true
-     */
     public boolean shouldGenerateShortVersion() {
         // Obter o tipo de duração atual
         DurationType duration = getDurationType();
@@ -69,13 +57,9 @@ public class ContentGenerationRequest {
         return Boolean.TRUE.equals(getGenerateShortVersion());
     }
 
-    /**
-     * Método de conveniência para compatibilidade retroativa
-     * @param minutes Duração em minutos
-     */
-    public void setTargetDuration(Integer minutes) {
-        if (minutes != null) {
-            this.durationType = DurationType.findClosest(minutes);
+    public void setTargetDuration(Integer seconds) {
+        if (seconds != null) {
+            this.durationType = DurationType.findClosest(seconds);
         }
     }
 

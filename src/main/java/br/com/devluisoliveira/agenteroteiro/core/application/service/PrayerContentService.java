@@ -189,7 +189,7 @@ public class PrayerContentService implements PrayerContentPortIn {
         requestMap.put("title", request.getTitle());
         requestMap.put("theme", request.getTheme());
         requestMap.put("notes", request.getNotes());
-        requestMap.put("targetDuration", request.getTargetDuration());
+        requestMap.put("targetDuration", request.getDurationType().getDurationInSeconds());
         requestMap.put("language", request.getLanguage());
         requestMap.put("contentTypes", request.getContentTypes());
         requestMap.put("generateShortVersion", request.getGenerateShortVersion());

@@ -12,11 +12,11 @@ Tipo de Oração: {prayerType}
 Estilo de Oração: {prayerStyle}
 Duração Oração: {targetDuration} minutos
 Idioma: {language}
-Passagem bíblica (opcional): {biblePassage}
+Passagem biblica: {biblePassage}
 Video curto: {shortVideo}
 Audio ‘Script’: {audioScript}
 Tipo de audiencia: {targetAudience}
-personalize nome: {personalizationName}
+Nome personalizado: {personalizationName}
 
 ## TIPOS DE CONTEÚDO SOLICITADOS
 {contentTypesFormatted}
