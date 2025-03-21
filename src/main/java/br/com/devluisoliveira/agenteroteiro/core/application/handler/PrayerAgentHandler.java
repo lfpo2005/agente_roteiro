@@ -72,7 +72,7 @@ public class PrayerAgentHandler implements AgentHandler {
             String theme = getStringValue(request, "theme");
 
             // Mapear seções da resposta
-            Map<ContentType, String> contentMap = extractContentSections(aiResponse);
+            Map<ContentType, String> contentMap = extractContentSections(aiResponse); //Todo: Verificar se o método extractContentSections está correto
 
             // Obter o tipo e estilo de oração
             PrayerType prayerType = getPrayerType(request);
@@ -116,7 +116,7 @@ public class PrayerAgentHandler implements AgentHandler {
 
     private String customizeTemplate(String template, Map<String, Object> request) {
         log.info("[PrayerAgentHandler.customizeTemplate] - Personalizando template de oração");
-        // Clone o template para evitar alterações no original
+
         String customizedTemplate = template;
 
         // Obter valores básicos
@@ -124,8 +124,15 @@ public class PrayerAgentHandler implements AgentHandler {
         String title = getStringValue(request, "title");
         String theme = getStringValue(request, "theme");
         String notes = getStringValue(request, "notes");
+        String bibleVersion = getStringValue(request, "bibleVersion");
         String targetDuration = request.containsKey("targetDuration") ? String.valueOf(request.get("targetDuration")) : "5";
         String language = getStringValue(request, "language", "pt_BR");
+        boolean isShort = request.containsKey("shortVideo") ? (Boolean) request.get("shortVideo") : false;
+        boolean isAudio = request.containsKey("audioScript") ? (Boolean) request.get("audioScript") : false;
+        String targetAudience = getStringValue(request, "targetAudience");
+        String personalizationName = getStringValue(request, "personalizationName");
+
+
 
         // Obter valores específicos da oração
         PrayerType prayerType = getPrayerType(request);
@@ -134,15 +141,21 @@ public class PrayerAgentHandler implements AgentHandler {
         String additionalContext = getStringValue(request, "additionalContext");
 
         // Substituir os placeholders básicos
-        customizedTemplate = customizedTemplate.replace("{processId}", nullSafe(processId))
-                .replace("{title}", nullSafe(title))
-                .replace("{theme}", nullSafe(theme))
-                .replace("{notes}", nullSafe(notes))
-                .replace("{prayerType}", prayerType != null ? prayerType.getDisplayName() : "")
-                .replace("{prayerStyle}", prayerStyle != null ? prayerStyle.getDisplayName() : "")
-                .replace("{targetDuration}", nullSafe(targetDuration))
-                .replace("{language}", nullSafe(language))
-                .replace("{biblePassage}", nullSafe(biblePassage));
+       customizedTemplate = customizedTemplate.replace("{processId}", nullSafe(processId))
+                                .replace("{title}", nullSafe(title))
+                                .replace("{theme}", nullSafe(theme))
+                                .replace("{notes}", nullSafe(notes))
+                                .replace("{bibleVersion}", nullSafe(bibleVersion).isEmpty() ? "NVI" : bibleVersion)
+                                .replace("{prayerType}", prayerType != null ? prayerType.getDisplayName() : "")
+                                .replace("{prayerStyle}", prayerStyle != null ? prayerStyle.getDisplayName() : "")
+                                .replace("{targetDuration}", nullSafe(targetDuration))
+                                .replace("{language}", nullSafe(language))
+                                .replace("{biblePassage}", nullSafe(biblePassage).isEmpty() ? "o que fizer sentido em relação ao tema" : biblePassage)
+                                .replace("{shortVideo}", nullSafe(isShort ? "Sim" : "Não"))
+                                .replace("{audioScript}", nullSafe(isAudio ? "Sim" : "Não"))
+                                .replace("{targetAudience}", nullSafe(targetAudience).isEmpty() ? "Cristãos" : targetAudience)
+                                .replace("{personalizationName}", nullSafe(personalizationName));
+
 
         // Obter e substituir as características do estilo e tipo de oração
         String prayerStyleChars = request.containsKey("prayerStyleCharacteristics")
@@ -152,13 +165,14 @@ public class PrayerAgentHandler implements AgentHandler {
         customizedTemplate = customizedTemplate.replace("{prayerStyleCharacteristics}", prayerStyleChars);
 
         // Substituir contexto adicional
-        if (additionalContext != null) {
-            customizedTemplate = customizedTemplate.replace("{additionalContext}", additionalContext);
-        }
-
+        customizedTemplate = customizedTemplate.replace("{additionalContext}", nullSafe(additionalContext));
 
         // Formatar tipos de conteúdo solicitados
         List<ContentType> contentTypes = getContentTypes(request);
+        if (contentTypes.isEmpty()) {
+            contentTypes = List.of(ContentType.TITLE, ContentType.DESCRIPTION, ContentType.SCRIPT, ContentType.TAGS);
+        }
+
         String contentTypesFormatted = contentTypes.stream()
                 .map(ContentType::getLabel)
                 .collect(Collectors.joining("\n- "));
@@ -167,39 +181,39 @@ public class PrayerAgentHandler implements AgentHandler {
         }
         customizedTemplate = customizedTemplate.replace("{contentTypesFormatted}", contentTypesFormatted);
 
-        // Configurar seções condicionais
-        customizedTemplate = customizedTemplate.replace("{titleSection}",
-                shouldIncludeSection(contentTypes, ContentType.TITLE) ? "### TÍTULO DA ORAÇÃO" : "");
+        // Configurar seções do formato de saída
+        StringBuilder formatOutput = new StringBuilder();
 
-        customizedTemplate = customizedTemplate.replace("{descriptionSection}",
-                shouldIncludeSection(contentTypes, ContentType.DESCRIPTION) ?
-                        "### DESCRIÇÃO\n[Descrição otimizada para plataformas de vídeo com 500-1000 caracteres]" : "");
+        if (shouldIncludeSection(contentTypes, ContentType.TITLE)) {
+            formatOutput.append("### TÍTULO DA ORAÇÃO\n\n");
+        }
+        if (shouldIncludeSection(contentTypes, ContentType.DESCRIPTION)) {
+            formatOutput.append("### DESCRIÇÃO\n[Descrição otimizada para plataformas de vídeo com 500-1000 caracteres]\n\n");
+        }
+        if (shouldIncludeSection(contentTypes, ContentType.TAGS)) {
+            formatOutput.append("### TAGS\n[5-10 hashtags relevantes para a oração]\n\n");
+        }
+        if (shouldIncludeSection(contentTypes, ContentType.SCRIPT)) {
+            formatOutput.append("### ORAÇÃO COMPLETA\n[Texto completo da oração seguindo a estrutura indicada]\n\n");
+        }
+        if (shouldIncludeSection(contentTypes, ContentType.THUMBNAIL_IDEA)) {
+            formatOutput.append("### IDEIA PARA THUMBNAIL\n[3 ideias para thumbnail com elementos visuais e texto]\n\n");
+        }
+        if (shouldIncludeSection(contentTypes, ContentType.AUDIO_SCRIPT)) {
+            formatOutput.append("### SCRIPT PARA ÁUDIO\n[Versão da oração otimizada para narração em áudio]\n\n");
+        }
+        if (shouldIncludeSection(contentTypes, ContentType.SHORTS_IDEA)) {
+            formatOutput.append("### VERSÃO CURTA\n[Versão curta da oração com 300-500 caracteres para vídeos breves]\n\n");
+        }
 
-        customizedTemplate = customizedTemplate.replace("{tagsSection}",
-                shouldIncludeSection(contentTypes, ContentType.TAGS) ?
-                        "### TAGS\n[5-10 hashtags relevantes para a oração]" : "");
+        customizedTemplate = customizedTemplate.replace("{formatOutput}", formatOutput.toString());
 
-        customizedTemplate = customizedTemplate.replace("{scriptSection}",
-                shouldIncludeSection(contentTypes, ContentType.SCRIPT) ?
-                        "### ORAÇÃO COMPLETA\n[Texto completo da oração seguindo a estrutura indicada]" : "");
-
-        customizedTemplate = customizedTemplate.replace("{thumbnailSection}",
-                shouldIncludeSection(contentTypes, ContentType.THUMBNAIL_IDEA) ?
-                        "### IDEIA PARA THUMBNAIL\n[3 ideias para thumbnail com elementos visuais e texto]" : "");
-
-        customizedTemplate = customizedTemplate.replace("{audioScriptSection}",
-                shouldIncludeSection(contentTypes, ContentType.AUDIO_SCRIPT) ?
-                        "### SCRIPT PARA ÁUDIO\n[Versão da oração otimizada para narração em áudio]" : "");
-
-        customizedTemplate = customizedTemplate.replace("{shortVersionSection}",
-                shouldIncludeSection(contentTypes, ContentType.SHORTS_IDEA) ?
-                        "### VERSÃO CURTA\n[Versão curta da oração com 300-500 caracteres para vídeos breves]" : "");
-
-        // Logar tamanho do prompt para monitoramento de tokens
+        // Log para depuração
         log.debug("[PrayerAgentHandler.customizeTemplate] - Prompt final com {} caracteres", customizedTemplate.length());
 
         return customizedTemplate;
     }
+
 
     private PrayerType getPrayerType(Map<String, Object> request) {
         Object typeObj = request.get("prayerType");

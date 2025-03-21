@@ -7,11 +7,16 @@ ProcessID: {processId}
 Título: {title}
 Tema: {theme}
 Notas: {notes}
+Versão: {bibleVersion}
 Tipo de Oração: {prayerType}
 Estilo de Oração: {prayerStyle}
-Duração alvo: {targetDuration} minutos
+Duração Oração: {targetDuration} minutos
 Idioma: {language}
 Passagem bíblica (opcional): {biblePassage}
+Video curto: {shortVideo}
+Audio ‘Script’: {audioScript}
+Tipo de audiencia: {targetAudience}
+personalize nome: {personalizationName}
 
 ## TIPOS DE CONTEÚDO SOLICITADOS
 {contentTypesFormatted}
