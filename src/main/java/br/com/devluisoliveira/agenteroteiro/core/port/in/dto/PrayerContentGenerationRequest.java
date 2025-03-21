@@ -32,12 +32,6 @@ public class PrayerContentGenerationRequest extends ContentGenerationRequest {
 
     }
 
-//    @Override
-//    public DurationType getDurationType() {
-//        DurationType type = super.getDurationType();
-//        return type != null ? type : DurationType.MINUTES_5;
-//    }
-
     public PrayerContentGenerationRequest(PrayerType prayerType, PrayerStyle prayerStyle, String prayerTheme) {
         this.prayerType = prayerType;
         this.prayerStyle = prayerStyle;

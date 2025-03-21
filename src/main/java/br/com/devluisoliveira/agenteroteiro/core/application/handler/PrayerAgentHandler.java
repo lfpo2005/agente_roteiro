@@ -127,7 +127,8 @@ public class PrayerAgentHandler implements AgentHandler {
         String bibleVersion = getStringValue(request, "bibleVersion");
         String language = getStringValue(request, "language", "pt_BR");
         boolean isShort = request.containsKey("shortVideo") ? (Boolean) request.get("shortVideo") : false;
-        boolean isAudio = request.containsKey("audioScript") ? (Boolean) request.get("audioScript") : false;
+        boolean generateAudio = request.containsKey("generateAudio") ? (Boolean) request.get("generateAudio") : false;
+
         String targetAudience = getStringValue(request, "targetAudience");
         String personalizationName = getStringValue(request, "personalizationName");
 
@@ -161,7 +162,7 @@ public class PrayerAgentHandler implements AgentHandler {
                 .replace("{language}", nullSafe(language))
                 .replace("{biblePassage}", nullSafe(biblePassage).isEmpty() ? "o que fizer sentido em relação ao tema" : biblePassage)
                 .replace("{shortVideo}", isShort ? "Sim" : "Não")
-                .replace("{audioScript}", isAudio ? "Sim" : "Não")
+                .replace("{generateAudio}", generateAudio ? "Sim" : "Não")
                 .replace("{targetAudience}", (targetAudience == null || targetAudience.isEmpty()) ? "Cristãos" : targetAudience)
                 .replace("{personalizationName}", nullSafe(personalizationName));
 
@@ -243,53 +244,55 @@ public class PrayerAgentHandler implements AgentHandler {
                 durationType = DurationType.MINUTES_5;
             }
         }
+        String importantNote = " **IMPORTATE** ESSE VALOR É SÓ DA ORAÇÃO";
 
         log.info("[PrayerAgentHandler.customizeTemplate] - Duração extraída: {}", durationType);
         if (durationType != null) {
             switch (durationType) {
                 case SECONDS_30:
-                    durationInstructions = "Tamanho total: 300-500 caracteres (30 segundos)";
+                    durationInstructions = "Tamanho da oração: 300-500 caracteres (30 segundos)" + importantNote;
                     break;
                 case SECONDS_60:
-                    durationInstructions = "Tamanho total: 500-800 caracteres (1 minuto)";
+                    durationInstructions = "Tamanho da oração: 500-800 caracteres (1 minuto)" + importantNote;
                     break;
                 case MINUTES_3:
-                    durationInstructions = "Tamanho total: 800-1.200 caracteres (3 minutos)";
+                    durationInstructions = "Tamanho da oração: 800-1.200 caracteres (3 minutos)" + importantNote;
                     break;
                 case MINUTES_5:
-                    durationInstructions = "Tamanho total: 1.800-2.200 caracteres (5 minutos)";
+                    durationInstructions = "Tamanho da oração: 1.800-2.200 caracteres (5 minutos)" + importantNote;
                     break;
                 case MINUTES_10:
-                    durationInstructions = "Tamanho total: 3.500-4.000 caracteres (10 minutos)";
+                    durationInstructions = "Tamanho da oração: 3.500-4.000 caracteres (10 minutos)" + importantNote;
                     break;
                 case MINUTES_15:
-                    durationInstructions = "Tamanho total: 3.500-4.000 caracteres (15 minutos)";
+                    durationInstructions = "Tamanho da oração: 3.500-4.000 caracteres (15 minutos)" + importantNote;
                     break;
                 case MINUTES_20:
-                    durationInstructions = "Tamanho total: 6.000-7.000 caracteres (20 minutos)";
+                    durationInstructions = "Tamanho da oração: 6.000-7.000 caracteres (20 minutos)" + importantNote;
                     break;
                 case MINUTES_25:
-                    durationInstructions = "Tamanho total: 8.000-9.000 caracteres (25 minutos)";
+                    durationInstructions = "Tamanho da oração: 8.000-9.000 caracteres (25 minutos)" + importantNote;
                     break;
                 case MINUTES_30:
-                    durationInstructions = "Tamanho total: 9.000-10.000 caracteres (30 minutos)";
+                    durationInstructions = "Tamanho da oração: 9.000-10.000 caracteres (30 minutos)" + importantNote;
                     break;
                 default:
-                    durationInstructions = "Tamanho total: 5.000-6.000 caracteres (15-30 minutos)";
+                    durationInstructions = "Tamanho da oração: 5.000-6.000 caracteres (15-30 minutos)" + importantNote;
                     break;
             }
         } else {
-            durationInstructions = "Tamanho total: 1.800-2.200 caracteres (5 minutos)";
+            durationInstructions = "Tamanho da oração: 1.800-2.200 caracteres (5 minutos)" + importantNote;
         }
         // Você pode optar por inserir essas instruções em um placeholder específico no template,
         // ou simplesmente anexá-las ao final.
         customizedTemplate += "\n\n" + durationInstructions;
 
+        customizedTemplate = customizedTemplate.replace("{processId}", nullSafe(processId))
+                .replace("{durationInstructions}", durationInstructions);
+
         log.debug("[PrayerAgentHandler.customizeTemplate] - Prompt final com {} caracteres", customizedTemplate.length());
         return customizedTemplate;
     }
-
-
 
     private PrayerType getPrayerType(Map<String, Object> request) {
         Object typeObj = request.get("prayerType");

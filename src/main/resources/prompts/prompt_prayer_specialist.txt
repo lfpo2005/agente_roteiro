@@ -10,11 +10,10 @@ Notas: {notes}
 Versão: {bibleVersion}
 Tipo de Oração: {prayerType}
 Estilo de Oração: {prayerStyle}
-Duração Oração: {targetDuration} minutos
+Duração da Oração: {targetDuration} minutos
 Idioma: {language}
 Passagem biblica: {biblePassage}
-Video curto: {shortVideo}
-Audio ‘Script’: {audioScript}
+Audio ‘Script’: {generateAudio}
 Tipo de audiencia: {targetAudience}
 Nome personalizado: {personalizationName}
 
@@ -34,39 +33,38 @@ Nome personalizado: {personalizationName}
 - Manter o tom e estilo conforme solicitado
 - Adaptar a extensão para a duração especificada
 
-## ESTRUTURA RECOMENDADA
-1. Verso bíblico de abertura obrigatório para todas as durações.
-2. Introdução
-Se vídeo ≤ 3 min Apenas o versículo bíblico.
-Se vídeo > 3 min Incluir saudação e breve introdução ao tema (6-8 linhas).
-3. Reflexão Bíblica
-Se vídeo ≤ 3 min Pular essa seção.
-Se vídeo > 3 min Incluir passagem bíblica relevante e breve explicação (6-8 linhas).
-
-4. Oração Principal:
-   Se vídeo ≤ 3 min Oração curta e direta, focada em invocação e um único pedido.
-   Se vídeo entre > 3 e < 10 min Oração desenvolvida com invocação, pedido e declaração de fé.
-   Se vídeo ≥ 10 min Oração aprofundada, incluindo aplicação prática e intercessão detalhada.
-5. Encerramento
-   Se vídeo ≤ 3 min versículo final e - "Em nome de Jesus, Amém"
-   Se vídeo > 3 min Recapitulação, bênção final e versículo diferente do inicial.
-   - "Em nome de Jesus, Amém"
+A oração deve seguir esta estrutura {durationInstructions}:
+1. Versículo inicial relevante ("Versículo ")
+2. Introdução com saudação e relevância do tema (6-8 linhas)
+3. Reflexão bíblica com passagem relevante (6-8 linhas)
+4. Oração principal
+5. Encerramento com:
+   Sempre - "Em nome de Jesus, Amém"
 
 ## CARACTERÍSTICAS DO ESTILO DE ORAÇÃO
 {prayerStyleCharacteristics}
 
 ## FORMATO DE SAÍDA
 
-{titleSection}
+EXEMPLO DE SAÍDA ORAÇÃO de 1 MINUTO
 
-{descriptionSection}
+ **Titulo:**
+ ORAÇÃO para COBRIR sua FAMÍLIA de BÊNÇÃOS #proteção #família 🙌
 
-{tagsSection}
+ **Descrição do Vídeo:**
+  Bem-vindos, família! Neste vídeo trazemos uma PODEROSA ORAÇÃO de PROTEÇÃO para FAMÍLIAS baseada no Salmo 91:4. Em tempos de incerteza, agarremo-nos à proteção divina. 🙏 Oremos juntos para confiar nossas famílias aos cuidados amorosos de Deus, confiando em seu escudo protetor que nos guarda de todo mal. Lembre-se de que nenhum mal prevalecerá sobre você! 🛡️🌟 Que a bênção de Deus esteja com você e sua família. Inscreva-se para mais conteúdos inspiradores e compartilhe esta oração de proteção com quem você ama! 🙌 #oração #salmo91 #proteção #fé #bênção #paz #compartilhar
 
-{scriptSection}
+ **Tags:**
+  #Oração #RestauraçãoFamiliar #Salmo91 #Família #Arrependimento #Uniãofamiliar
 
-{thumbnailSection}
 
-{audioScriptSection}
+ **Thumbnail:**
+"Oração de Proteção para sua Família" PALAVRAS CHAVE OTIMISADAS PARA SEO]
+ **Oração:**
+""O Senhor é meu refúgio e minha fortaleza, meu Deus, em quem confio." (Salmo 91:2)
+Amado Pai Celestial, hoje nos reunimos em humildade buscando a restauração e união de nossas famílias. Reconhecemos nossas falhas e clamamos por Tua graça para transformar nossos corações.
+Na passagem de Lucas 15:11-32, vemos a parábola do filho pródigo, que ilustra o amor incondicional e a restauração que encontramos em Ti, Senhor.
+Pai misericordioso, pedimos perdão por nossos erros e ações que causaram divisão em nossas famílias. Que Tua luz brilhe sobre nós, restaurando laços quebrados e renovando nosso amor mútuo. Guia-nos no caminho da reconciliação e fortalece nossa união em Teu nome.
+Concluímos esta oração confiantes na Tua fidelidade, Senhor. Que a promessa de Isaías 41:10 nos console: "Não temas, porque eu sou contigo; não te assombres, porque eu sou teu Deus." Que Tua bênção esteja sobre nossas famílias. Em nome de Jesus, Amém.
+"
 
-{shortVersionSection}

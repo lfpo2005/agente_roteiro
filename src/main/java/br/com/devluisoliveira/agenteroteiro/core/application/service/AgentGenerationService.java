@@ -8,9 +8,7 @@ import br.com.devluisoliveira.agenteroteiro.core.port.in.AgentGenerationPortIn;
 import br.com.devluisoliveira.agenteroteiro.core.port.in.dto.ContentGenerationRequest;
 import br.com.devluisoliveira.agenteroteiro.core.port.out.response.GenerationResponseDto;
 import br.com.devluisoliveira.agenteroteiro.core.port.out.response.dto.ContentGenerationResponse;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -65,7 +63,7 @@ public class AgentGenerationService implements AgentGenerationPortIn {
             String prompt = handler.preparePrompt(requestMap);
 
             // 3. Chamar a API de IA para gerar conteúdo
-            String aiResponse = generateContent(prompt, requestMap);
+            String aiResponse = generateContent(prompt);
 
             if (aiResponse == null || aiResponse.isEmpty()) {
                 log.error("[AgentGenerationService.startGeneration] - Resposta vazia da IA");
@@ -105,7 +103,7 @@ public class AgentGenerationService implements AgentGenerationPortIn {
     /**
      * Gera conteúdo chamando o provedor de IA apropriado
      */
-    private String generateContent(String prompt, Map<String, Object> requestMap) {
+    private String generateContent(String prompt) {
         log.info("[AgentGenerationService.generateContent] - Gerando conteúdo com prompt de {} caracteres", Optional.of(prompt.length()));
 
         try {
